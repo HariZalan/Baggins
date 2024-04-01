@@ -1,0 +1,35 @@
+Something went wrong. If you think that it is a bug, contact me at either harizalan12@gmail.com or harizalan.programs@gmail.com.
+SEPARATOR
+Completed!
+SEPARATOR
+get.conf does not exist, getting its content from https://zalan.withssl.com/en/baggins/get_1.0.conf...
+SEPARATOR
+Webview were not installed. The script solved the problem, but you will need to run it again.
+SEPARATOR
+Sorry, the environment is externally managed so cannot install webview. On Ubuntu/Debian, try sudo apt install python3-webview or sudo apt install python-webview.
+SEPARATOR
+Options:
+-h, --help: display this message;
+-o, --online: suppose that the user is online and will not try to access local pages.
+-u --update: update the program;
+-p --private: open in private mode.
+
+Currently only one argument can be used once (you cannot combine them). So baggins -o and baggins -p is valid, but baggins -p -o or baggins -po is not.
+SEPARATOR
+I am currently working on the update function. I am NOT responsible for any problem/data loss that occur.
+SEPARATOR
+The update has been completed. To upgrade the other files as well, pass -U or --full-upgrade.
+SEPARATOR
+Baggins 1.0 "Otho"
+SEPARATOR
+Menu
+SEPARATOR
+Back to main page
+SEPARATOR
+Enter URL
+SEPARATOR
+Load URL
+SEPARATOR
+Update URL
+SEPARATOR
+Quit
