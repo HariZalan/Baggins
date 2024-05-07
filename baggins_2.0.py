@@ -15,7 +15,6 @@ def openWebPage(page):
 	def searchuri(entry,webv):
 		webv.load_uri("https://google.com/search?q="+entry.get_text())
 	def ourthread(entry,webv):
-		#mydogisnotsuicide=hurray
 		url=webv.get_uri()
 		if (url!="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html"):
 			entry.set_text(url)
