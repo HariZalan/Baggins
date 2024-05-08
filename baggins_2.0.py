@@ -2,12 +2,13 @@ import sys
 import urllib.request
 import os
 import time
-def openWebPage(page,traditional=False,name="Baggins",version="2.0"):
+def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins",version="2.0"):
 	import threading
 	import gi
 	gi.require_version("Gtk","3.0")
 	gi.require_version("WebKit2","4.0")
-	from gi.repository import Gtk, WebKit2 #or WebKit2, Gtk
+	
+	from gi.repository import Gtk, WebKit2, Gdk #or WebKit2, Gtk
 	def gotouri(entry,webv):
 		webv.load_uri(entry.get_text())
 	def geturi(entry,webv):
@@ -22,11 +23,17 @@ def openWebPage(page,traditional=False,name="Baggins",version="2.0"):
 			if (url!=webv.get_uri()):
 				url=webv.get_uri()
 				entry.set_text(url)
-	webv=WebKit2.WebView()
-	settings=webv.get_settings()
-	WebKit2.Settings.set_user_agent_with_application_details(settings,name,version)
-	webv.load_uri(page)
-	WebKit2.Settings.set_enable_webrtc(settings,True)
+	def openinnewwindow(wv,navact):
+		x=navact.get_request().get_uri()
+		openWebPage(page=x)
+		return None
+	if (webv==None):
+		webv=WebKit2.WebView()
+		webv.connect("create",openinnewwindow)
+		settings=webv.get_settings()
+		WebKit2.Settings.set_user_agent_with_application_details(settings,name,version)
+		webv.load_uri(page)
+		#WebKit2.Settings.set_enable_webrtc(settings,True)
 	box2=Gtk.Box()
 	entrie=Gtk.Entry()
 	entrie.set_placeholder_text("The necessary URL or search expression")
@@ -54,6 +61,12 @@ def openWebPage(page,traditional=False,name="Baggins",version="2.0"):
 	window.set_size_request(1000,1000)
 	window.set_title("Baggins 2.0 “Bilbo”")
 	window.connect("destroy",Gtk.main_quit)
+	accelerator_nottooquick=Gtk.AccelGroup()
+	accelerator_nottooquick.connect(Gdk.keyval_from_name("b"),Gdk.ModifierType.CONTROL_MASK,0,lambda x,y,z,w: webv.go_back())
+	window.add_accel_group(accelerator_nottooquick)
+	accelerator_nottooquick_second=Gtk.AccelGroup()
+	accelerator_nottooquick_second.connect(Gdk.keyval_from_name("d"),Gdk.ModifierType.CONTROL_MASK,0,lambda x,y,z,w: webv.go_forward())
+	window.add_accel_group(accelerator_nottooquick_second)
 	window.box=Gtk.Box(orientation=Gtk.STYLE_CLASS_VERTICAL)
 	if (traditional==False):
 		window.box.pack_start(webv,expand=True,fill=True,padding=0)
