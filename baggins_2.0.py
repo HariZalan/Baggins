@@ -2,7 +2,7 @@ import sys
 import urllib.request
 import os
 import time
-def openWebPage(page):
+def openWebPage(page,traditional=False,name="Baggins",version="2.0"):
 	import threading
 	import gi
 	gi.require_version("Gtk","3.0")
@@ -23,11 +23,14 @@ def openWebPage(page):
 				url=webv.get_uri()
 				entry.set_text(url)
 	webv=WebKit2.WebView()
+	settings=webv.get_settings()
+	WebKit2.Settings.set_user_agent_with_application_details(settings,name,version)
 	webv.load_uri(page)
-	#WebKit2.Settings.set_enable_webrtc(WebKit2.Settings(),True)
+	WebKit2.Settings.set_enable_webrtc(settings,True)
 	box2=Gtk.Box()
 	entrie=Gtk.Entry()
 	entrie.set_placeholder_text("The necessary URL or search expression")
+	entrie.connect("activate",lambda x: gotouri(entrie,webv))
 	button0=Gtk.Button(label="Go")
 	button0.connect("clicked",lambda x: gotouri(entrie,webv))
 	button=Gtk.Button(label="←")
@@ -38,19 +41,26 @@ def openWebPage(page):
 	button4.connect("clicked", lambda x: searchuri(entrie,webv))
 	button5=Gtk.Button(label="⟳")
 	button5.connect("clicked",lambda x: webv.reload())
+	#button6=Gtk.Button(label="Inspect")
+	#button6.connect("clicked",lambda x: webv.get_inspector().show())
 	box2.pack_start(button,expand=False,fill=False,padding=1)
 	box2.pack_start(button2,expand=False,fill=False,padding=1)
 	box2.pack_start(button5,expand=False,fill=False,padding=1)
 	box2.pack_start(entrie,expand=True,fill=True,padding=1)
 	box2.pack_start(button0,expand=False,fill=False,padding=1)
 	box2.pack_start(button4,expand=False,fill=False,padding=1)
+	#box2.pack_start(button6,expand=False,fill=False,padding=1)
 	window=Gtk.Window()
 	window.set_size_request(1000,1000)
 	window.set_title("Baggins 2.0 “Bilbo”")
 	window.connect("destroy",Gtk.main_quit)
 	window.box=Gtk.Box(orientation=Gtk.STYLE_CLASS_VERTICAL)
-	window.box.pack_start(webv,expand=True,fill=True,padding=0)
-	window.box.pack_end(box2,expand=False,fill=False,padding=0)
+	if (traditional==False):
+		window.box.pack_start(webv,expand=True,fill=True,padding=0)
+		window.box.pack_end(box2,expand=False,fill=False,padding=0)
+	else:
+		window.box.pack_start(box2,expand=False,fill=False,padding=0)
+		window.box.pack_end(webv,expand=True,fill=True,padding=0)
 	window.add(window.box)
 	window.show_all()
 	urlthread=threading.Thread(target=ourthread,args=(entrie,webv,),daemon=True)
@@ -105,10 +115,10 @@ if (leftsecs > 0 and leftsecs<=864000):
 	labelle.pack()
 	window.mainloop()
 if (time.time()>1788238799): # September 1 2026, 04:59:59 GMT
-	print ("Your current Baggins version is not supported, please, upgrade to a newer one. You can run Baggins with -U and then -u to do this.")
+	print ("Your current Baggins version is not supported, please, upgrade to a newer one. You can run Baggins with -u to do this.")
 	window=tk.Tk()
 	window.title("The support ended")
-	tk.Label(window,text="Your current Baggins version is not supported, please, upgrade to a newer one. You can run Baggins with -U and then -u to do this.").pack()
+	tk.Label(window,text="Your current Baggins version is not supported, please, upgrade to a newer one. You can run Baggins with -u to do this.").pack()
 	window.mainloop()
 	if (time.time()>1797832799): # December 21 2025, 05:59:59 GMT
 		if (not os.path.exists("IWillUpgradeIPromise")):
@@ -206,6 +216,8 @@ if (len(sys.argv)==2):
 		openWebPage("https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html")
 	elif (sys.argv[1]=="--none" or sys.argv[1]=="-0"):
 		exit(0)
+	elif (sys.argv[1]=="--traditional" or sys.argv[1]=="-t"):
+		openWebPage("https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",traditional=True)
 	else:
 		openWebPage(sys.argv[1])
 else:
