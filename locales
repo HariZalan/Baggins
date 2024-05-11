@@ -12,7 +12,6 @@ Options:
 -h, --help: display this message;
 -u --update: update the program with all accessories;
 -p --private: open in private mode.
-
 Currently only one argument can be used once (you cannot combine them).
 SEPARATOR
 I am currently working on the update function. I am NOT responsible for any problem/data loss that occur.
