@@ -4,31 +4,19 @@ Completed!
 SEPARATOR
 get.conf does not exist, getting its content from https://zalan.withssl.com/en/baggins/get_1.0.conf...
 SEPARATOR
-Webview were not installed. The script solved the problem, but you will need to run it again.
+dummy
 SEPARATOR
-Sorry, the environment is externally managed so cannot install webview. On Ubuntu/Debian, try sudo apt install python3-webview.
+dummy
 SEPARATOR
 Options:
 -h, --help: display this message;
--U --full-upgrade: update the program with all accessories;
+-u --update: update the program with all accessories;
 -p --private: open in private mode.
 
-Currently only one argument can be used once (you cannot combine them). So baggins -o and baggins -p is valid, but baggins -p -o or baggins -po is not.
+Currently only one argument can be used once (you cannot combine them).
 SEPARATOR
 I am currently working on the update function. I am NOT responsible for any problem/data loss that occur.
 SEPARATOR
-The update has been completed. To upgrade the other files as well, pass -U or --full-upgrade.
+The update has been completed.
 SEPARATOR
 Baggins 2.0 “Bilbo”
-SEPARATOR
-Menu
-SEPARATOR
-Back to main page
-SEPARATOR
-Enter URL
-SEPARATOR
-Load URL
-SEPARATOR
-Update URL
-SEPARATOR
-Quit
