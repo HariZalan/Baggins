@@ -2,36 +2,55 @@ import sys
 import urllib.request
 import os
 import time
-def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins",version="2.0"):
+import argparse
+def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html"):
 	import threading
+	if (page=="about:mainpage"):
+		page=mainpage
 	import gi
 	gi.require_version("Gtk","3.0")
 	gi.require_version("WebKit2","4.0")
-	
 	from gi.repository import Gtk, WebKit2, Gdk #or WebKit2, Gtk
 	def gotouri(entry,webv):
-		webv.load_uri(entry.get_text())
+		if (entry.get_text()!="about:mainpage"):
+			webv.load_uri(entry.get_text())
+		else:
+			webv.load_uri(mainpage)
 	def geturi(entry,webv):
 		entry.set_text(webv.get_uri())
 	def searchuri(entry,webv):
 		webv.load_uri("https://google.com/search?q="+entry.get_text())
 	def ourthread(entry,webv):
 		url=webv.get_uri()
-		if (url!="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html"):
+		if (url!=mainpage): # Do not show URL at mainpage
 			entry.set_text(url)
+		else:
+			entry.set_text("about:mainpage")
 		while True:
 			if (url!=webv.get_uri()):
-				url=webv.get_uri()
-				entry.set_text(url)
+				if (webv.get_uri()!=mainpage): # Do not show URL at mainpage
+					url=webv.get_uri()
+					entry.set_text(url)
+				else:
+					url=webv.get_uri()
+					entry.set_text("about:mainpage")
 	def openinnewwindow(wv,navact):
 		x=navact.get_request().get_uri()
 		openWebPage(page=x)
 		return None
+	The_third_one=Gtk.Label()
+	def displayuri(attercop,hittestresult,oldtomnoddy,TheThirdOne):
+		if (hittestresult.context_is_link()==True):
+			TheThirdOne.set_text(hittestresult.get_link_uri())
+		else:
+			TheThirdOne.set_text("")
 	if (webv==None):
 		webv=WebKit2.WebView()
 		webv.connect("create",openinnewwindow)
+		webv.connect("mouse-target-changed",lambda x,y,z: displayuri(x,y,z,The_third_one))
 		settings=webv.get_settings()
 		WebKit2.Settings.set_user_agent_with_application_details(settings,name,version)
+		#WebKit2.CookieManager.set_persistent_storage("baggins.storage")
 		webv.load_uri(page)
 		#WebKit2.Settings.set_enable_webrtc(settings,True)
 	box2=Gtk.Box()
@@ -71,8 +90,10 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 	if (traditional==False):
 		window.box.pack_start(webv,expand=True,fill=True,padding=0)
 		window.box.pack_end(box2,expand=False,fill=False,padding=0)
+		window.box.pack_end(The_third_one,expand=False,fill=False,padding=0)
 	else:
 		window.box.pack_start(box2,expand=False,fill=False,padding=0)
+		window.box.pack_end(The_third_one,expand=False,fill=False,padding=0)
 		window.box.pack_end(webv,expand=True,fill=True,padding=0)
 	window.add(window.box)
 	window.show_all()
