@@ -1,18 +1,19 @@
+#!/usr/bin/env python3
 import sys
 import urllib.request
 import os
 import time
 import argparse
-def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html"):
+def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=False):
 	import threading
-	if (page=="about:mainpage"):
+	if (page=="about:home"):
 		page=mainpage
 	import gi
 	gi.require_version("Gtk","3.0")
 	gi.require_version("WebKit2","4.0")
 	from gi.repository import Gtk, WebKit2, Gdk #or WebKit2, Gtk
 	def gotouri(entry,webv):
-		if (entry.get_text()!="about:mainpage"):
+		if (entry.get_text()!="about:home"):
 			webv.load_uri(entry.get_text())
 		else:
 			webv.load_uri(mainpage)
@@ -25,7 +26,7 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 		if (url!=mainpage): # Do not show URL at mainpage
 			entry.set_text(url)
 		else:
-			entry.set_text("about:mainpage")
+			entry.set_text("about:home")
 		while True:
 			if (url!=webv.get_uri()):
 				if (webv.get_uri()!=mainpage): # Do not show URL at mainpage
@@ -33,7 +34,7 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 					entry.set_text(url)
 				else:
 					url=webv.get_uri()
-					entry.set_text("about:mainpage")
+					entry.set_text("about:home")
 	def openinnewwindow(wv,navact):
 		x=navact.get_request().get_uri()
 		openWebPage(page=x)
@@ -41,13 +42,21 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 	The_third_one=Gtk.Label()
 	def displayuri(attercop,hittestresult,oldtomnoddy,TheThirdOne):
 		if (hittestresult.context_is_link()==True):
+			TheThirdOne.set_visible(True)
 			TheThirdOne.set_text(hittestresult.get_link_uri())
 		else:
 			TheThirdOne.set_text("")
+			TheThirdOne.set_visible(False)
+	window=Gtk.Window()
 	if (webv==None):
 		webv=WebKit2.WebView()
 		webv.connect("create",openinnewwindow)
 		webv.connect("mouse-target-changed",lambda x,y,z: displayuri(x,y,z,The_third_one))
+		def titlechanged(a,b,title,webv):
+			window.set_title("Baggins 2.0 “Bilbo”, "+webv.get_uri()+" is opened, title: "+title)
+		#webv.connect("title-changed",lambda x, y, z: titlechanged(x,y,z,webv))
+		if (private==False):
+			webv.cookieManager=WebKit2.WebContext.get_default().get_cookie_manager(); WebKit2.CookieManager.set_persistent_storage(webv.cookieManager,"baggins.storage",WebKit2.CookiePersistentStorage(WebKit2.CookiePersistentStorage.TEXT))
 		settings=webv.get_settings()
 		WebKit2.Settings.set_user_agent_with_application_details(settings,name,version)
 		#WebKit2.CookieManager.set_persistent_storage("baggins.storage")
@@ -76,7 +85,6 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 	box2.pack_start(button0,expand=False,fill=False,padding=1)
 	box2.pack_start(button4,expand=False,fill=False,padding=1)
 	#box2.pack_start(button6,expand=False,fill=False,padding=1)
-	window=Gtk.Window()
 	window.set_size_request(1000,1000)
 	window.set_title("Baggins 2.0 “Bilbo”")
 	window.connect("destroy",Gtk.main_quit)
@@ -247,7 +255,7 @@ if (len(sys.argv)==2):
 				pyscriptfile.close()
 				print (localesc[7])
 	elif (sys.argv[1]=="-p" or sys.argv[1]=="--private"):
-		openWebPage("https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html")
+		openWebPage("https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=True)
 	elif (sys.argv[1]=="--none" or sys.argv[1]=="-0"):
 		exit(0)
 	elif (sys.argv[1]=="--traditional" or sys.argv[1]=="-t"):
