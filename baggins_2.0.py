@@ -40,18 +40,19 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 		openWebPage(page=x)
 		return None
 	The_third_one=Gtk.Label()
-	def displayuri(attercop,hittestresult,oldtomnoddy,TheThirdOne):
+	def displayuri(attercop,hittestresult,oldtomnoddy,TheThirdOne,traditional):
 		if (hittestresult.context_is_link()==True):
 			TheThirdOne.set_visible(True)
 			TheThirdOne.set_text(hittestresult.get_link_uri())
 		else:
 			TheThirdOne.set_text("")
-			TheThirdOne.set_visible(False)
+			if (traditional==True):
+				TheThirdOne.set_visible(False)
 	window=Gtk.Window()
 	if (webv==None):
 		webv=WebKit2.WebView()
 		webv.connect("create",openinnewwindow)
-		webv.connect("mouse-target-changed",lambda x,y,z: displayuri(x,y,z,The_third_one))
+		webv.connect("mouse-target-changed",lambda x,y,z: displayuri(x,y,z,The_third_one,traditional))
 		def titlechanged(a,b,title,webv):
 			window.set_title("Baggins 2.0 “Bilbo”, "+webv.get_uri()+" is opened, title: "+title)
 		#webv.connect("title-changed",lambda x, y, z: titlechanged(x,y,z,webv))
