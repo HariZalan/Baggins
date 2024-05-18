@@ -53,16 +53,18 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 		webv=WebKit2.WebView()
 		webv.connect("create",openinnewwindow)
 		webv.connect("mouse-target-changed",lambda x,y,z: displayuri(x,y,z,The_third_one,traditional))
-		def titlechanged(a,b,title,webv):
-			window.set_title("Baggins 2.0 “Bilbo”, "+webv.get_uri()+" is opened, title: "+title)
-		#webv.connect("title-changed",lambda x, y, z: titlechanged(x,y,z,webv))
+		def titlechanged(webv,unn):
+			window.set_title("Baggins 2.0 “Bilbo”, the title of the current page is “"+webv.get_title()+"”")
+		webv.connect("notify::title",titlechanged)
 		if (private==False):
 			webv.cookieManager=WebKit2.WebContext.get_default().get_cookie_manager(); WebKit2.CookieManager.set_persistent_storage(webv.cookieManager,"baggins.storage",WebKit2.CookiePersistentStorage(WebKit2.CookiePersistentStorage.TEXT))
 		settings=webv.get_settings()
 		WebKit2.Settings.set_user_agent_with_application_details(settings,name,version)
 		#WebKit2.CookieManager.set_persistent_storage("baggins.storage")
 		webv.load_uri(page)
-		#WebKit2.Settings.set_enable_webrtc(settings,True)
+		WebKit2.Settings.set_enable_webrtc(settings,True)
+		WebKit2.Settings.set_enable_developer_extras(settings,True)
+		WebKit2.Settings.set_enable_back_forward_navigation_gestures(settings,True)
 	box2=Gtk.Box()
 	entrie=Gtk.Entry()
 	entrie.set_placeholder_text("The necessary URL or search expression")
@@ -109,6 +111,15 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 	urlthread=threading.Thread(target=ourthread,args=(entrie,webv,),daemon=True)
 	urlthread.start()
 	Gtk.main()
+argpersar=argparse.ArgumentParser()
+argpersar.add_argument("-t","--traditional",action="store_true")
+argpersar.add_argument("-p","--private",action="store_true")
+argpersar.add_argument("-e","--export",action="store_true")
+argpersar.add_argument("-i","--importdata",action="store_true")
+argpersar.add_argument("-u","--update",action="store_true")
+argpersar.add_argument("-0","--none",action="store_true")
+argpersar.add_argument("-?","--helpme",action="store_true")
+arglistr=argpersar.parse_args()
 try:
 	import tkinter as tk
 except:
@@ -120,16 +131,16 @@ except:
 		print ("Argh. It failed as well. On Ubuntu/Debian, the environment can be externally managed, and you will need to install Tkinter with either sudo apt install python3-tkinter or sudo apt install python-tkinter. The exception:")
 		print (ourEczema)
 #getgetconfconf
-if (not os.path.exists("./getget.conf.conf")):
-	getgetconfconffile=open("getget.conf.conf","w")
+if (not os.path.exists("/".join(os.path.realpath(__file__).split("/")[:-1])+"/getget.conf.conf")):
+	getgetconfconffile=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/getget.conf.conf","w")
 	getgetconfconffile.write("https://zalan.withssl.com/en/baggins/get_2.0.conf")
 	getgetconfconffile.close()
 #locale probe
-if (not os.path.exists("./locales")):
+if (not os.path.exists("/".join(os.path.realpath(__file__).split("/")[:-1])+"/locales")):
 	print ("Localisation file does not exist, downloading...")
 	try:
-		if (os.path.exists("./get.conf")):
-			getconf=open("get.conf")
+		if (os.path.exists("/".join(os.path.realpath(__file__).split("/")[:-1])+"/get.conf")):
+			getconf=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/get.conf")
 			getconfcontent=getconf.read()
 			getconf.close()
 			getconfcontent=getconfcontent.split("\n")
@@ -140,10 +151,10 @@ if (not os.path.exists("./locales")):
 		print ("Failed, exiting.")
 		print (ourex)
 		exit (1)
-	localesf=open("./locales","w")
+	localesf=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/locales","w")
 	localesf.write(ourContent)
 	localesf.close()
-locales=open("./locales")
+locales=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/locales")
 localesc=locales.read()
 locales.close()
 localesc=localesc.replace("\n","")
@@ -174,9 +185,9 @@ if (time.time()>1788238799): # September 1 2026, 04:59:59 GMT
 #Function
 def getgetconf():
 	global localesc
-	ourFile=open("./get.conf","w")
+	ourFile=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/get.conf","w")
 	try:
-		thisContent=urllib.request.urlopen(open("getget.conf.conf").read()).read().decode()
+		thisContent=urllib.request.urlopen(open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/getget.conf.conf").read()).read().decode()
 	except Exception as MyException:
 		print (localesc[0]+str(MyException))# print error message
 		ourFile.close()
@@ -188,23 +199,23 @@ def getgetconf():
 		else:
 			print ("")
 #get.conf probe
-if (not os.path.exists("./get.conf")):
+if (not os.path.exists("/".join(os.path.realpath(__file__).split("/")[:-1])+"/get.conf")):
 	print (localesc[2]) # print information message
 	getgetconf()
-getconfcontent=open("./get.conf")
+getconfcontent=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/get.conf")
 getconfcontent2=getconfcontent.read()
 getconfcontent.close()
 getconfcontent=getconfcontent2
 getconfcontent=getconfcontent.split("\n")
 #Check the existance of main page
-if (not os.path.exists("./mainpage_current.html")):
+if (not os.path.exists("/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html")):
 	try:
 		mainpageCurrent=urllib.request.urlopen(getconfcontent[2]).read().decode()
 	except Exception as ourex:
 		print ("Failed to get main page:")
 		print (ourex)
 	else:
-		mainpageCurrentf=open("./mainpage_current.html","w")
+		mainpageCurrentf=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html","w")
 		mainpageCurrentf.write(mainpageCurrent)
 		mainpageCurrentf.close()
 #Check the existance of Bilbo's picture.
@@ -216,29 +227,29 @@ if (not os.path.exists("./Bilbo.png")):
 		print ("Failed to get the picture about Bilbo Baggins:")
 		print (ourex)
 	else:
-		Bilbof=open("./Bilbo.png","bw")
+		Bilbof=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/Bilbo.png","bw")
 		Bilbof.write(Bilbo)
 		Bilbof.close()
-if (len(sys.argv)==2):
-	if (sys.argv[1]=="-h" or sys.argv[1]=="--help"):
+if (len(sys.argv)>1):
+	if (arglistr.helpme==True):#if (sys.argv[1]=="-h" or sys.argv[1]=="--help"):
 		print (localesc[5])
-	elif (sys.argv[1]=="-u" or sys.argv[1]=="--upgrade"):
+	elif (arglistr.update==True):
 		getgetconf()
-		getconfcontent=open("./get.conf")
+		getconfcontent=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/get.conf")
 		getconfcontent2=getconfcontent.read()
 		getconfcontent.close()
 		getconfcontent=getconfcontent2
 		getconfcontent=getconfcontent.split("\n")
 		bilbopng=urllib.request.urlopen(getconfcontent[1]).read()
-		bilbopng_file=open("Bilbo.png","bw")
+		bilbopng_file=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/Bilbo.png","bw")
 		bilbopng_file.write(bilbopng)
 		bilbopng_file.close()
 		mainpage=urllib.request.urlopen(getconfcontent[2]).read()
-		mainpage_local=open("./mainpage_current.html","bw")
+		mainpage_local=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html","bw")
 		mainpage_local.write(mainpage)
 		mainpage_local.close()
 		locales=urllib.request.urlopen(getconfcontent[3]).read().decode()
-		locales_local=open("locales","w")
+		locales_local=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/locales","w")
 		locales_local.write(locales)
 		locales_local.close()
 		print (localesc[6])
@@ -255,12 +266,36 @@ if (len(sys.argv)==2):
 				pyscriptfile.write(pyscriptcontent)
 				pyscriptfile.close()
 				print (localesc[7])
-	elif (sys.argv[1]=="-p" or sys.argv[1]=="--private"):
+	elif (arglistr.private==True):
 		openWebPage("https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=True)
-	elif (sys.argv[1]=="--none" or sys.argv[1]=="-0"):
+	elif (arglistr.none==True):
 		exit(0)
-	elif (sys.argv[1]=="--traditional" or sys.argv[1]=="-t"):
+	elif (arglistr.traditional==True):
 		openWebPage("https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",traditional=True)
+	elif (arglistr.export==True):
+		print ("Are you sure that you want to export all your logins? Your – possibly present – previous export WILL perish. Press enter to do it, ^C to exit.")
+		try:
+			input()
+		except KeyboardInterrupt:
+			exit(0)
+		storage=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/baggins.storage")
+		storageContent=storage.read()
+		storage.close()
+		exportfile=open(os.path.expanduser("~")+"/baggins.exported","w")
+		exportfile.write(storageContent)
+		exportfile.close()
+	elif (arglistr.importdata==True):
+			print ("Are you sure that you want to import your previous logins? Your current ones will be cut off. ^C to quit, enter to proceed.")
+			try:
+				input()
+			except KeyboardInterrupt:
+				exit(0)
+			toimport=open(os.path.expanduser("~")+"/baggins.exported")
+			toimportc=toimport.read()
+			toimport.close()
+			storage=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/baggins.storage","w")
+			storage.write(toimportc)
+			storage.close()
 	else:
 		openWebPage(sys.argv[1])
 else:
