@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import urllib.request
+import urllib.parse
 import os
 import time
 import argparse
@@ -12,6 +13,15 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 	gi.require_version("Gtk","3.0")
 	gi.require_version("WebKit2","4.0")
 	from gi.repository import Gtk, WebKit2, Gdk #or WebKit2, Gtk
+	def searchorgo(entry,webv):
+		if (entry.get_text()!="about:home"):
+			paersar=urllib.parse.urlparse(entry.get_text())
+			if (paersar.scheme):
+				webv.load_uri(entry.get_text())
+			else:
+				searchuri(entry,webv)
+		else:
+			webv.load_uri(mainpage)
 	def gotouri(entry,webv):
 		if (entry.get_text()!="about:home"):
 			webv.load_uri(entry.get_text())
@@ -31,7 +41,7 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 			if (url!=webv.get_uri()):
 				if (webv.get_uri()!=mainpage): # Do not show URL at mainpage
 					url=webv.get_uri()
-					entry.set_text(url)
+					entry.set_text(WebKit2.uri_for_display(url))
 				else:
 					url=webv.get_uri()
 					entry.set_text("about:home")
@@ -43,7 +53,7 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 	def displayuri(attercop,hittestresult,oldtomnoddy,TheThirdOne,traditional):
 		if (hittestresult.context_is_link()==True):
 			TheThirdOne.set_visible(True)
-			TheThirdOne.set_text(hittestresult.get_link_uri())
+			TheThirdOne.set_text(WebKit2.uri_for_display(hittestresult.get_link_uri()))
 		else:
 			TheThirdOne.set_text("")
 			if (traditional==True):
@@ -65,10 +75,13 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 		WebKit2.Settings.set_enable_webrtc(settings,True)
 		WebKit2.Settings.set_enable_developer_extras(settings,True)
 		WebKit2.Settings.set_enable_back_forward_navigation_gestures(settings,True)
+		WebKit2.Settings.set_default_charset(settings,"utf-8")
+		if (private==True):
+			pass#WebKit2.Settings.set_enable_private_browsing(settings,True) deprecated
 	box2=Gtk.Box()
 	entrie=Gtk.Entry()
 	entrie.set_placeholder_text("The necessary URL or search expression")
-	entrie.connect("activate",lambda x: gotouri(entrie,webv))
+	entrie.connect("activate",lambda x: searchorgo(entrie,webv))
 	button0=Gtk.Button(label="Go")
 	button0.connect("clicked",lambda x: gotouri(entrie,webv))
 	button=Gtk.Button(label="←")
@@ -119,6 +132,7 @@ argpersar.add_argument("-i","--importdata",action="store_true")
 argpersar.add_argument("-u","--update",action="store_true")
 argpersar.add_argument("-0","--none",action="store_true")
 argpersar.add_argument("-?","--helpme",action="store_true")
+argpersar.add_argument("url",nargs="?")
 arglistr=argpersar.parse_args()
 try:
 	import tkinter as tk
