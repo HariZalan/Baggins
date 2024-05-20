@@ -5,9 +5,9 @@ import urllib.parse
 import os
 import time
 import argparse
-def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=False):
+def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=False):
 	import threading
-	if (page=="about:home"):
+	if (page=="about:home" or page==None):
 		page=mainpage
 	import gi
 	gi.require_version("Gtk","3.0")
@@ -41,7 +41,10 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 			if (url!=webv.get_uri()):
 				if (webv.get_uri()!=mainpage): # Do not show URL at mainpage
 					url=webv.get_uri()
-					entry.set_text(WebKit2.uri_for_display(url))
+					try:
+						entry.set_text(WebKit2.uri_for_display(url))
+					except:
+						pass
 				else:
 					url=webv.get_uri()
 					entry.set_text("about:home")
@@ -60,9 +63,41 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 				TheThirdOne.set_visible(False)
 	window=Gtk.Window()
 	if (webv==None):
+		def loadfailed(webv,uri,cert,err):
+			if (webv.can_go_back()==True):
+				webv.load_alternate_html("""
+				<!DOCTYPE html>
+				<html>
+					<head>
+					<meta charset="utf-8"/>
+					<title>Error</title>
+					</head>
+					<body style="background-color: black; text-align: center;">
+					<p style="text-align: center; color: white;"><b>An error has occured while Baggins tried to load the page using HTTPS.</b></p>
+					<a href="javascript:history.back()" style="color: green;">Back to the previous page</a>
+					<!--<img src="https://tolkiengateway.net/w/images/a/a7/Anke_Ei%C3%9Fmann_-_The_Death_of_Isildur.jpg"/>-->
+					</body>
+				</html>
+				""",uri,uri)
+			else:
+				webv.load_alternate_html("""
+				<!DOCTYPE html>
+				<html>
+					<head>
+					<meta charset="utf-8"/>
+					<title>Error</title>
+					</head>
+					<body style="background-color: black; color: white; text-align: center;">
+					<p style="text-align: center;"><b>An error has occured while Baggins tried to load the page using HTTPS.</b></p>
+					<!--<img src="https://tolkiengateway.net/w/images/a/a7/Anke_Ei%C3%9Fmann_-_The_Death_of_Isildur.jpg"/>-->
+					</body>
+				</html>
+				""",uri,uri)
+			return True
 		webv=WebKit2.WebView()
 		webv.connect("create",openinnewwindow)
 		webv.connect("mouse-target-changed",lambda x,y,z: displayuri(x,y,z,The_third_one,traditional))
+		webv.connect("load-failed-with-tls-errors",loadfailed)
 		def titlechanged(webv,unn):
 			window.set_title("Baggins 2.0 “Bilbo”, the title of the current page is “"+webv.get_title()+"”")
 		webv.connect("notify::title",titlechanged)
@@ -73,11 +108,12 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 		#WebKit2.CookieManager.set_persistent_storage("baggins.storage")
 		webv.load_uri(page)
 		WebKit2.Settings.set_enable_webrtc(settings,True)
+		WebKit2.Settings.set_enable_media_stream(settings,True)
 		WebKit2.Settings.set_enable_developer_extras(settings,True)
 		WebKit2.Settings.set_enable_back_forward_navigation_gestures(settings,True)
 		WebKit2.Settings.set_default_charset(settings,"utf-8")
-		if (private==True):
-			pass#WebKit2.Settings.set_enable_private_browsing(settings,True) deprecated
+		#if (private==True):
+		#	pass#WebKit2.Settings.set_enable_private_browsing(settings,True) deprecated
 	box2=Gtk.Box()
 	entrie=Gtk.Entry()
 	entrie.set_placeholder_text("The necessary URL or search expression")
@@ -100,16 +136,14 @@ def openWebPage(page="thereiswebview",traditional=False,webv=None,name="Baggins"
 	box2.pack_start(entrie,expand=True,fill=True,padding=1)
 	box2.pack_start(button0,expand=False,fill=False,padding=1)
 	box2.pack_start(button4,expand=False,fill=False,padding=1)
+	#def keypressed(wget,eventitself):
+	#	return False
 	#box2.pack_start(button6,expand=False,fill=False,padding=1)
 	window.set_size_request(1000,1000)
 	window.set_title("Baggins 2.0 “Bilbo”")
 	window.connect("destroy",Gtk.main_quit)
-	accelerator_nottooquick=Gtk.AccelGroup()
-	accelerator_nottooquick.connect(Gdk.keyval_from_name("b"),Gdk.ModifierType.CONTROL_MASK,0,lambda x,y,z,w: webv.go_back())
-	window.add_accel_group(accelerator_nottooquick)
-	accelerator_nottooquick_second=Gtk.AccelGroup()
-	accelerator_nottooquick_second.connect(Gdk.keyval_from_name("d"),Gdk.ModifierType.CONTROL_MASK,0,lambda x,y,z,w: webv.go_forward())
-	window.add_accel_group(accelerator_nottooquick_second)
+	#window.connect("key-press-event",keypressed)
+	#window.add_accelerator(button2,"<Control>d","clicked")
 	window.box=Gtk.Box(orientation=Gtk.STYLE_CLASS_VERTICAL)
 	if (traditional==False):
 		window.box.pack_start(webv,expand=True,fill=True,padding=0)
@@ -281,11 +315,11 @@ if (len(sys.argv)>1):
 				pyscriptfile.close()
 				print (localesc[7])
 	elif (arglistr.private==True):
-		openWebPage("https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=True)
+		openWebPage(mainpage="file:///"+"/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html",private=True)
 	elif (arglistr.none==True):
 		exit(0)
 	elif (arglistr.traditional==True):
-		openWebPage("https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",traditional=True)
+		openWebPage(mainpage="file:///"+"/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html",traditional=True)
 	elif (arglistr.export==True):
 		print ("Are you sure that you want to export all your logins? Your – possibly present – previous export WILL perish. Press enter to do it, ^C to exit.")
 		try:
@@ -311,6 +345,6 @@ if (len(sys.argv)>1):
 			storage.write(toimportc)
 			storage.close()
 	else:
-		openWebPage(sys.argv[1])
+		openWebPage(page=sys.argv[1],mainpage="file:///"+"/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html")
 else:
 	openWebPage("https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html")
