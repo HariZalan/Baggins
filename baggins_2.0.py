@@ -5,7 +5,7 @@ import urllib.parse
 import os
 import time
 import argparse
-def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=False):
+def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=False,kiosk=False):
 	import threading
 	if (page=="about:home" or page==None):
 		page=mainpage
@@ -13,6 +13,16 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 	gi.require_version("Gtk","3.0")
 	gi.require_version("WebKit2","4.0")
 	from gi.repository import Gtk, WebKit2, Gdk #or WebKit2, Gtk
+	css="""
+	button, entry {
+		border-radius: 20px;
+		margin-right: 5px;
+		margin-left: 5px;
+	}
+	"""
+	provider=Gtk.CssProvider()
+	provider.load_from_data(css)
+	Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),provider,Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 	def searchorgo(entry,webv):
 		if (entry.get_text()!="about:home"):
 			paersar=urllib.parse.urlparse(entry.get_text())
