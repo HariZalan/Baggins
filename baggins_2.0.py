@@ -5,14 +5,16 @@ import urllib.parse
 import os
 import time
 import argparse
-def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=False,kiosk=False):
+def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=False,kiosk=False,title=None,autoclosable=False):
+	if (kiosk==True):
+		traditional=True
 	import threading
 	if (page=="about:home" or page==None):
 		page=mainpage
 	import gi
 	gi.require_version("Gtk","3.0")
 	gi.require_version("WebKit2","4.0")
-	from gi.repository import Gtk, WebKit2, Gdk #or WebKit2, Gtk
+	from gi.repository import Gtk, WebKit2, Gdk, Gio #or WebKit2, Gtk
 	css="""
 	button, entry {
 		border-radius: 20px;
@@ -23,44 +25,54 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 	provider=Gtk.CssProvider()
 	provider.load_from_data(css)
 	Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),provider,Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-	def searchorgo(entry,webv):
-		if (entry.get_text()!="about:home"):
-			paersar=urllib.parse.urlparse(entry.get_text())
-			if (paersar.scheme):
+	if (kiosk==False):
+		def searchorgo(entry,webv):
+			if (entry.get_text()!="about:home"):
+				paersar=urllib.parse.urlparse(entry.get_text())
+				if (paersar.scheme):
+					webv.load_uri(entry.get_text())
+				else:
+					searchuri(entry,webv)
+			else:
+				webv.load_uri(mainpage)
+		def gotouri(entry,webv):
+			if (entry.get_text()!="about:home"):
 				webv.load_uri(entry.get_text())
 			else:
-				searchuri(entry,webv)
+				webv.load_uri(mainpage)
+		def geturi(entry,webv):
+			entry.set_text(webv.get_uri())
+		def searchuri(entry,webv):
+			webv.load_uri("https://google.com/search?q="+entry.get_text())
+	def ourthread(entry=None,webv=WebKit2.WebView(),autoclosable=False):
+		if (entry==None):
+			while True:
+				if (webv.get_uri().endswith("#baggins-browser-close-requested") and autoclosable==True):
+					Gtk.main_quit()
 		else:
-			webv.load_uri(mainpage)
-	def gotouri(entry,webv):
-		if (entry.get_text()!="about:home"):
-			webv.load_uri(entry.get_text())
-		else:
-			webv.load_uri(mainpage)
-	def geturi(entry,webv):
-		entry.set_text(webv.get_uri())
-	def searchuri(entry,webv):
-		webv.load_uri("https://google.com/search?q="+entry.get_text())
-	def ourthread(entry,webv):
-		url=webv.get_uri()
-		if (url!=mainpage): # Do not show URL at mainpage
-			entry.set_text(url)
-		else:
-			entry.set_text("about:home")
-		while True:
-			if (url!=webv.get_uri()):
-				if (webv.get_uri()!=mainpage): # Do not show URL at mainpage
-					url=webv.get_uri()
-					try:
-						entry.set_text(WebKit2.uri_for_display(url))
-					except:
-						pass
-				else:
-					url=webv.get_uri()
-					entry.set_text("about:home")
-	def openinnewwindow(wv,navact):
+			url=webv.get_uri()
+			if (url!=mainpage): # Do not show URL at mainpage
+				entry.set_text(url)
+			else:
+				entry.set_text("about:home")
+			while True:
+				if (webv.get_uri().endswith("#baggins-browser-close-requested") and autoclosable==True):
+					Gtk.main_quit()
+				if (url!=webv.get_uri()):
+					if (webv.get_uri()!=mainpage): # Do not show URL at mainpage
+						url=webv.get_uri()
+						if (autoclosable==True and url.endswith("#baggins-browser-close-requested")):
+							Gtk.main_quit()
+						try:
+							entry.set_text(WebKit2.uri_for_display(url))
+						except:
+							pass
+					else:
+						url=webv.get_uri()
+						entry.set_text("about:home")
+	def openinnewwindow(wv,navact,kiosk,traditional,private,title):
 		x=navact.get_request().get_uri()
-		openWebPage(page=x)
+		openWebPage(page=x,kiosk=kiosk,traditional=traditional,private=private,title=title)
 		return None
 	The_third_one=Gtk.Label()
 	def displayuri(attercop,hittestresult,oldtomnoddy,TheThirdOne,traditional):
@@ -80,7 +92,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 				<html>
 					<head>
 					<meta charset="utf-8"/>
-					<title>Error</title>
+					<title>Alas!</title>
 					</head>
 					<body style="background-color: black; text-align: center;">
 					<p style="text-align: center; color: white;"><b>An error has occured while Baggins tried to load the page using HTTPS.</b></p>
@@ -95,7 +107,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 				<html>
 					<head>
 					<meta charset="utf-8"/>
-					<title>Error</title>
+					<title>Alas!</title>
 					</head>
 					<body style="background-color: black; color: white; text-align: center;">
 					<p style="text-align: center;"><b>An error has occured while Baggins tried to load the page using HTTPS.</b></p>
@@ -105,12 +117,13 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 				""",uri,uri)
 			return True
 		webv=WebKit2.WebView()
-		webv.connect("create",openinnewwindow)
+		webv.connect("create",lambda x,y: openinnewwindow(x,y,kiosk,traditional,private,title))
 		webv.connect("mouse-target-changed",lambda x,y,z: displayuri(x,y,z,The_third_one,traditional))
 		webv.connect("load-failed-with-tls-errors",loadfailed)
 		def titlechanged(webv,unn):
 			window.set_title("Baggins 2.0 “Bilbo”, the title of the current page is “"+webv.get_title()+"”")
-		webv.connect("notify::title",titlechanged)
+		if (title==None):
+			webv.connect("notify::title",titlechanged)
 		if (private==False):
 			webv.cookieManager=WebKit2.WebContext.get_default().get_cookie_manager(); WebKit2.CookieManager.set_persistent_storage(webv.cookieManager,"baggins.storage",WebKit2.CookiePersistentStorage(WebKit2.CookiePersistentStorage.TEXT))
 		settings=webv.get_settings()
@@ -124,48 +137,61 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		WebKit2.Settings.set_default_charset(settings,"utf-8")
 		#if (private==True):
 		#	pass#WebKit2.Settings.set_enable_private_browsing(settings,True) deprecated
-	box2=Gtk.Box()
-	entrie=Gtk.Entry()
-	entrie.set_placeholder_text("The necessary URL or search expression")
-	entrie.connect("activate",lambda x: searchorgo(entrie,webv))
-	button0=Gtk.Button(label="Go")
-	button0.connect("clicked",lambda x: gotouri(entrie,webv))
-	button=Gtk.Button(label="←")
-	button.connect("clicked",lambda x: webv.go_back())
-	button2=Gtk.Button(label="→")
-	button2.connect("clicked",lambda x: webv.go_forward())
-	button4=Gtk.Button(label="🔍")
-	button4.connect("clicked", lambda x: searchuri(entrie,webv))
-	button5=Gtk.Button(label="⟳")
-	button5.connect("clicked",lambda x: webv.reload())
-	#button6=Gtk.Button(label="Inspect")
-	#button6.connect("clicked",lambda x: webv.get_inspector().show())
-	box2.pack_start(button,expand=False,fill=False,padding=1)
-	box2.pack_start(button2,expand=False,fill=False,padding=1)
-	box2.pack_start(button5,expand=False,fill=False,padding=1)
-	box2.pack_start(entrie,expand=True,fill=True,padding=1)
-	box2.pack_start(button0,expand=False,fill=False,padding=1)
-	box2.pack_start(button4,expand=False,fill=False,padding=1)
+	if (kiosk==False):
+		box2=Gtk.Box()
+		entrie=Gtk.Entry()
+		entrie.set_placeholder_text("The necessary URL or search expression")
+		entrie.connect("activate",lambda x: searchorgo(entrie,webv))
+		button0=Gtk.Button(label="Go")
+		button0.connect("clicked",lambda x: gotouri(entrie,webv))
+		button=Gtk.Button(label="←")
+		button.connect("clicked",lambda x: webv.go_back())
+		button2=Gtk.Button(label="→")
+		button2.connect("clicked",lambda x: webv.go_forward())
+		button4=Gtk.Button(label="🔍")
+		button4.connect("clicked", lambda x: searchuri(entrie,webv))
+		button5=Gtk.Button(label="⟳")
+		button5.connect("clicked",lambda x: webv.reload())
+		#button6=Gtk.Button(label="Inspect")
+		#button6.connect("clicked",lambda x: webv.get_inspector().show())
+		box2.pack_start(button,expand=False,fill=False,padding=1)
+		box2.pack_start(button2,expand=False,fill=False,padding=1)
+		box2.pack_start(button5,expand=False,fill=False,padding=1)
+		box2.pack_start(entrie,expand=True,fill=True,padding=1)
+		box2.pack_start(button0,expand=False,fill=False,padding=1)
+		box2.pack_start(button4,expand=False,fill=False,padding=1)
 	#def keypressed(wget,eventitself):
 	#	return False
 	#box2.pack_start(button6,expand=False,fill=False,padding=1)
 	window.set_size_request(1000,1000)
-	window.set_title("Baggins 2.0 “Bilbo”")
+	if (title==None):
+		window.set_title("Baggins 2.0 “Bilbo”")
+	else:
+		window.set_title(title)
 	window.connect("destroy",Gtk.main_quit)
 	#window.connect("key-press-event",keypressed)
 	#window.add_accelerator(button2,"<Control>d","clicked")
 	window.box=Gtk.Box(orientation=Gtk.STYLE_CLASS_VERTICAL)
 	if (traditional==False):
 		window.box.pack_start(webv,expand=True,fill=True,padding=0)
-		window.box.pack_end(box2,expand=False,fill=False,padding=0)
+		if (kiosk==False):
+			window.box.pack_end(box2,expand=False,fill=False,padding=0)
 		window.box.pack_end(The_third_one,expand=False,fill=False,padding=0)
+		if (traditional==True):
+			The_third_one.set_visible(False)
 	else:
-		window.box.pack_start(box2,expand=False,fill=False,padding=0)
 		window.box.pack_end(The_third_one,expand=False,fill=False,padding=0)
+		if (kiosk==False):
+			window.box.pack_start(box2,expand=False,fill=False,padding=0)
+		if (traditional==True):
+			The_third_one.set_visible(False)
 		window.box.pack_end(webv,expand=True,fill=True,padding=0)
 	window.add(window.box)
 	window.show_all()
-	urlthread=threading.Thread(target=ourthread,args=(entrie,webv,),daemon=True)
+	if (kiosk==False):
+		urlthread=threading.Thread(target=ourthread,args=(entrie,webv,autoclosable,),daemon=True)
+	else:
+		urlthread=threading.Thread(target=ourthread,args=(None,webv,autoclosable,),daemon=True)
 	urlthread.start()
 	Gtk.main()
 argpersar=argparse.ArgumentParser()
@@ -174,9 +200,11 @@ argpersar.add_argument("-p","--private",action="store_true")
 argpersar.add_argument("-e","--export",action="store_true")
 argpersar.add_argument("-i","--importdata",action="store_true")
 argpersar.add_argument("-u","--update",action="store_true")
+argpersar.add_argument("-k","--kiosk",action="store_true")
 argpersar.add_argument("-0","--none",action="store_true")
-argpersar.add_argument("-?","--helpme",action="store_true")
+argpersar.add_argument("-c","--closable",action="store_true")
 argpersar.add_argument("url",nargs="?")
+argpersar.add_argument("--title",nargs="?")
 arglistr=argpersar.parse_args()
 try:
 	import tkinter as tk
@@ -289,9 +317,7 @@ if (not os.path.exists("./Bilbo.png")):
 		Bilbof.write(Bilbo)
 		Bilbof.close()
 if (len(sys.argv)>1):
-	if (arglistr.helpme==True):#if (sys.argv[1]=="-h" or sys.argv[1]=="--help"):
-		print (localesc[5])
-	elif (arglistr.update==True):
+	if (arglistr.update==True):
 		getgetconf()
 		getconfcontent=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/get.conf")
 		getconfcontent2=getconfcontent.read()
@@ -324,12 +350,21 @@ if (len(sys.argv)>1):
 				pyscriptfile.write(pyscriptcontent)
 				pyscriptfile.close()
 				print (localesc[7])
-	elif (arglistr.private==True):
-		openWebPage(mainpage="file:///"+"/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html",private=True)
-	elif (arglistr.none==True):
 		exit(0)
-	elif (arglistr.traditional==True):
+	if (arglistr.private==True):
+		openWebPage(mainpage="file:///"+"/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html",private=True)
+		exit(0)
+	if (arglistr.none==True):
+		exit(0)
+	if (arglistr.traditional==True):
 		openWebPage(mainpage="file:///"+"/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html",traditional=True)
+		exit(0)
+	if (arglistr.kiosk==True):
+		url=arglistr.url
+		closable=arglistr.closable
+		title=arglistr.title
+		openWebPage(page=url,mainpage="file:///"+"/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html",kiosk=True,autoclosable=closable,title=title)
+		exit(0)
 	elif (arglistr.export==True):
 		print ("Are you sure that you want to export all your logins? Your – possibly present – previous export WILL perish. Press enter to do it, ^C to exit.")
 		try:
@@ -342,6 +377,7 @@ if (len(sys.argv)>1):
 		exportfile=open(os.path.expanduser("~")+"/baggins.exported","w")
 		exportfile.write(storageContent)
 		exportfile.close()
+		exit(0)
 	elif (arglistr.importdata==True):
 			print ("Are you sure that you want to import your previous logins? Your current ones will be cut off. ^C to quit, enter to proceed.")
 			try:
@@ -354,7 +390,10 @@ if (len(sys.argv)>1):
 			storage=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/baggins.storage","w")
 			storage.write(toimportc)
 			storage.close()
-	else:
-		openWebPage(page=sys.argv[1],mainpage="file:///"+"/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html")
+			exit(0)
+	if (arglistr.url!=None):
+		openWebPage(page=arglistr.url,mainpage="file:///"+"/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html")
+		exit(0)
 else:
-	openWebPage("https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html")
+	openWebPage(mainpage="file:///"+"/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html")
+	exit(0)
