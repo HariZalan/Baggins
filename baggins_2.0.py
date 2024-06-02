@@ -3,9 +3,38 @@ import sys
 import urllib.request
 import urllib.parse
 import os
+import platform
 import time
 import argparse
+import math
+import re
+if (platform.system()!="Linux"):
+	print ("Warning: Baggins has been designed for Linux, so it could malfunction on thy platform.")
+	if (platform.system()=="Windows"):
+		print ("Sorry, Baggins will not work on Windows, even if you could compile WebKitGTK, exiting, bye.")
+		exit(1)
 def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=False,kiosk=False,title=None,autoclosable=False):
+	def bookmark(webv):
+		if (not os.path.exists("/".join(os.path.realpath(__file__).split("/")[:-1])+"/bookmarks.txt")):
+			f=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/bookmarks.txt","w")
+			f.write("")
+			f.close()
+		bookmarklistfile=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/bookmarks.txt")
+		content=bookmarklistfile.read()#but I am not content
+		content2=content.split("\n")
+		if (webv.get_uri() not in content2):
+			bookmarklistfile.close()
+			bookmarklistfile=open("/".join(os.path.realpath(__file__).split("/")[:-1])+"/bookmarks.txt","a")
+			bookmarklistfile.write(webv.get_uri()+"\n")
+			bookmarklistfile.close()
+		window=Gtk.Window()
+		window.set_title("Your bookmarks for now")
+		label=Gtk.Label()
+		label.set_text(content)
+		window.add(label)
+		window.show_all()
+		window.connect("destroy",Gtk.main_quit)
+		Gtk.main()
 	if (kiosk==True):
 		traditional=True
 	import threading
@@ -15,22 +44,38 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 	gi.require_version("Gtk","3.0")
 	gi.require_version("WebKit2","4.0")
 	from gi.repository import Gtk, WebKit2, Gdk, Gio #or WebKit2, Gtk
-	css="""
-	button, entry {
-		border-radius: 20px;
-		margin-right: 5px;
-		margin-left: 5px;
-	}
-	"""
-	provider=Gtk.CssProvider()
-	provider.load_from_data(css)
-	Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),provider,Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+	try:
+		css="""
+		button, entry {
+			border-radius: 20px;
+			margin-right: 5px;
+			margin-left: 5px;
+		}
+		.titlebutton.close:hover {
+			background: red;
+			transition: background 0.3s ease;
+		}
+		.titlebutton.close {
+			transition: background 0.3s ease;
+		}
+		"""
+		provider=Gtk.CssProvider()
+		provider.load_from_data(css)
+		Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(),provider,Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+	except Exception as e:
+		print ("Failed to load CSS, the browser will work, but the GUI will be poor. The exception:")
+		print (exception)
 	if (kiosk==False):
 		def searchorgo(entry,webv):
 			if (entry.get_text()!="about:home"):
-				paersar=urllib.parse.urlparse(entry.get_text())
-				if (paersar.scheme):
-					webv.load_uri(entry.get_text())
+				url=entry.get_text()
+				paersar=urllib.parse.urlparse(url)
+				paersar2=urllib.parse.urlparse("http://"+url)
+				
+				if (paersar.scheme):# and re.fullmatch("[abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]*)"
+					webv.load_uri(url)
+				elif (paersar2.scheme):
+					webv.load_uri("http://"+url)
 				else:
 					searchuri(entry,webv)
 			else:
@@ -83,7 +128,25 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 			TheThirdOne.set_text("")
 			if (traditional==True):
 				TheThirdOne.set_visible(False)
+	def download(webv):
+		
+		fchosern=Gtk.FileChooserDialog(title="Download URI")
+		fchosern.add_buttons(Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN,Gtk.ResponseType.OK)
+		retriever=fchosern.run()#not labrador retriever, it is quite important
+		if (retriever==Gtk.ResponseType.CANCEL):
+			fchosern.destroy()
+			return True
+		if (retriever==Gtk.ResponseType.OK):
+			filename=fchosern.get_filename()
+			fchosern.destroy()
+			webv.download_uri(webv.get_uri())
+			WebKit2.Download.set_destination(filename,webv.Download)
+			WebKit2.Download.connect("finished",lambda: print("finished"))
 	window=Gtk.Window()
+	#window.set_icon_name("gnome-nettool")
+	icon="/".join(os.path.realpath(__file__).split("/")[:-1])+"/Bilbo.png"
+	#window.set_icon("/".join(os.path.realpath(__file__).split("/")[:-1])+"/Bilbo.png")
+	#icon=Gtk.IconTheme.load_icon(Gtk.IconTheme(),"3x3",Gtk.IconLookupFlags.USE_BUILTIN,None)
 	if (webv==None):
 		def loadfailed(webv,uri,cert,err):
 			if (webv.can_go_back()==True):
@@ -125,7 +188,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		if (title==None):
 			webv.connect("notify::title",titlechanged)
 		if (private==False):
-			webv.cookieManager=WebKit2.WebContext.get_default().get_cookie_manager(); WebKit2.CookieManager.set_persistent_storage(webv.cookieManager,"baggins.storage",WebKit2.CookiePersistentStorage(WebKit2.CookiePersistentStorage.TEXT))
+			webv.cookieManager=WebKit2.WebContext.get_default().get_cookie_manager(); WebKit2.CookieManager.set_persistent_storage(webv.cookieManager,"/".join(os.path.realpath(__file__).split("/")[:-1])+"/baggins.storage",WebKit2.CookiePersistentStorage(WebKit2.CookiePersistentStorage.TEXT))
 		settings=webv.get_settings()
 		WebKit2.Settings.set_user_agent_with_application_details(settings,name,version)
 		#WebKit2.CookieManager.set_persistent_storage("baggins.storage")
@@ -152,6 +215,11 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		button4.connect("clicked", lambda x: searchuri(entrie,webv))
 		button5=Gtk.Button(label="⟳")
 		button5.connect("clicked",lambda x: webv.reload())
+		button6=Gtk.Button(label="⤵️")
+		button6.connect("clicked",lambda x: download(webv))
+		button6.set_sensitive(False)
+		button7=Gtk.Button(label="📑")
+		button7.connect("clicked",lambda x: bookmark(webv))
 		#button6=Gtk.Button(label="Inspect")
 		#button6.connect("clicked",lambda x: webv.get_inspector().show())
 		box2.pack_start(button,expand=False,fill=False,padding=1)
@@ -160,6 +228,8 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		box2.pack_start(entrie,expand=True,fill=True,padding=1)
 		box2.pack_start(button0,expand=False,fill=False,padding=1)
 		box2.pack_start(button4,expand=False,fill=False,padding=1)
+		box2.pack_start(button6,expand=False,fill=False,padding=1)
+		box2.pack_start(button7,expand=False,fill=False,padding=1)
 	#def keypressed(wget,eventitself):
 	#	return False
 	#box2.pack_start(button6,expand=False,fill=False,padding=1)
@@ -305,7 +375,7 @@ if (not os.path.exists("/".join(os.path.realpath(__file__).split("/")[:-1])+"/ma
 		mainpageCurrentf.write(mainpageCurrent)
 		mainpageCurrentf.close()
 #Check the existance of Bilbo's picture.
-if (not os.path.exists("./Bilbo.png")):
+if (not os.path.exists("/".join(os.path.realpath(__file__).split("/")[:-1])+"/Bilbo.png")):
 	try:
 		Bilbo=urllib.request.urlopen(getconfcontent[1]).read()
 		print ("Getting the picture about Bilbo...")
@@ -379,7 +449,7 @@ if (len(sys.argv)>1):
 		exportfile.close()
 		exit(0)
 	elif (arglistr.importdata==True):
-			print ("Are you sure that you want to import your previous logins? Your current ones will be cut off. ^C to quit, enter to proceed.")
+			print ("Are you sure that you want to import your previous logins? Your current ones will be removed. ^C to quit, enter to proceed.")
 			try:
 				input()
 			except KeyboardInterrupt:
@@ -392,7 +462,7 @@ if (len(sys.argv)>1):
 			storage.close()
 			exit(0)
 	if (arglistr.url!=None):
-		openWebPage(page=arglistr.url,mainpage="file:///"+"/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html")
+		openWebPage(page=arglistr.url,mainpage="file:///"+"/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html",autoclosable=arglistr.closable)
 		exit(0)
 else:
 	openWebPage(mainpage="file:///"+"/".join(os.path.realpath(__file__).split("/")[:-1])+"/mainpage_current.html")
