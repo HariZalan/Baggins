@@ -27,7 +27,7 @@ def wandupd(uri,file):
 		OurContent=urllib.request.urlopen(uri).read()
 	except Exception as Extion:
 		print("Failed to update Baggins/get necessary files. Check your internet connection and the availability of zalan.withssl.com. The error message:")
-		print (str(Ei))
+		print (str(Extion))
 		exit(1)
 	else:
 		try:
