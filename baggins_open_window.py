@@ -1,6 +1,7 @@
 import os
 import urllib
-def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,spinner=False):
+bilbospath="/".join(os.path.realpath(__file__).split("/")[:-1])
+def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,spinner=False,search_engine="https://duckduckgo.com/?q="):
 	if (kiosk==True):
 		traditional=True
 	import threading
@@ -55,7 +56,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		def geturi(entry,webv):
 			entry.set_text(webv.get_uri())
 		def searchuri(entry,webv):
-			webv.load_uri("https://google.com/search?q="+entry.get_text())
+			webv.load_uri(search_engine+entry.get_text())
 	def ourthread(entry=None,webv=WebKit2.WebView(),autoclosable=False,back=None,forward=None):
 		if (entry==None):
 			while True:
@@ -134,7 +135,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 			#WebKit2.Download.connect("finished",lambda: print("finished"))
 	window=Gtk.Window()
 	#window.set_icon_name("gnome-nettool")
-	icon="/".join(os.path.realpath(__file__).split("/")[:-1])+"/Bilbo.png"
+	icon=bilbospath+"/Bilbo.png"
 	#window.set_icon("/".join(os.path.realpath(__file__).split("/")[:-1])+"/Bilbo.png")
 	#icon=Gtk.IconTheme.load_icon(Gtk.IconTheme(),"3x3",Gtk.IconLookupFlags.USE_BUILTIN,None)
 	if (webv==None):
@@ -178,7 +179,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		if (title==None):
 			webv.connect("notify::title",titlechanged)
 		if (private==False):
-			webv.cookieManager=WebKit2.WebContext.get_default().get_cookie_manager(); WebKit2.CookieManager.set_persistent_storage(webv.cookieManager,"/".join(os.path.realpath(__file__).split("/")[:-1])+"/baggins.storage",WebKit2.CookiePersistentStorage(WebKit2.CookiePersistentStorage.TEXT))
+			webv.cookieManager=WebKit2.WebContext.get_default().get_cookie_manager(); WebKit2.CookieManager.set_persistent_storage(webv.cookieManager,bilbospath+"/baggins.storage",WebKit2.CookiePersistentStorage(WebKit2.CookiePersistentStorage.TEXT))
 		settings=webv.get_settings()
 		WebKit2.Settings.set_user_agent_with_application_details(settings,name,version)
 		#WebKit2.CookieManager.set_persistent_storage("baggins.storage")
