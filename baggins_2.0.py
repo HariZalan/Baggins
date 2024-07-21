@@ -26,7 +26,7 @@ def wandupd(uri,file):
 	try:
 		OurContent=urllib.request.urlopen(uri).read()
 	except Exception as Extion:
-		print("Failed to update Baggins/get necessary files. Check your internet connection and the availability of zalan.withssl.com. The error message:")
+		print("Failed to update Baggins/get necessary files. Check your internet connection and the availability of raw.githubusercontent.com. The error message:")
 		print (str(Extion))
 		exit(1)
 	else:
@@ -54,12 +54,9 @@ argpersar.add_argument("-c","--closable",action="store_true")
 argpersar.add_argument("url",nargs="?")
 argpersar.add_argument("--title",nargs="?")
 arglistr=argpersar.parse_args()
-sEngineF=open(path+"/searchengine")
-sEngine=sEngineF.read()
-sEngineF.close()
 #getgetconfconf
 if (not os.path.exists(path+"/getget.conf.conf")):
-	wandupd(uri="https://zalan.withssl.com/en/baggins/get_2.0.conf",file=path+"/getget.conf.conf")
+	wandupd(uri="https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/getget.conf.conf",file=path+"/getget.conf.conf")
 #support probe
 endofsupport=1788238799
 leftsecs=endofsupport-time.time()
@@ -95,7 +92,7 @@ def getgetconf():
 			print ("")
 #get.conf probe
 if (not os.path.exists(path+"/get.conf")):
-	print ("get.conf does not exist, getting its content from https://zalan.withssl.com/en/baggins/get_1.0.conf...") # print information message
+	print ("get.conf does not exist, getting its content...") # print information message
 	getgetconf()
 getconfcontent=open(path+"/get.conf")
 getconfcontent2=getconfcontent.read()
@@ -108,6 +105,13 @@ if (not os.path.exists(path+"/mainpage_current.html")):
 #Check the existance of Bilbo's picture.
 if (not os.path.exists(path+"/Bilbo.png")):
 	wandupd(getconfcontent[1],path+"/Bilbo.png")
+if (not os.path.exists(path+"/searchengine")):
+	ourFileAgain=open("searchengine","w")
+	ourFileAgain.write("https://duckduckgo.com/?q=")
+	ourFileAgain.close()
+sEngineF=open(path+"/searchengine")
+sEngine=sEngineF.read()
+sEngineF.close()
 if (arglistr.update==True):
 	getgetconf()
 	getconfcontent=open(path+"/get.conf")
