@@ -17,7 +17,7 @@ sudo apt -y install ./baggins_current.deb
 
 ```
 2. For other distributions, use
-3. ```bash
+ ```bash
    cd ~
    git clone https://github.com/HariZalan/Baggins
    sudo ln -s Baggins/baggins_2.0.py /usr/bin/baggins
