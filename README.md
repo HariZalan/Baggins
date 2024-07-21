@@ -21,5 +21,5 @@ sudo apt -y install ./baggins_current.deb
    cd ~
    git clone https://github.com/HariZalan/Baggins
    sudo ln -s Baggins/baggins_2.0.py /usr/bin/baggins
-      
    ```
+Then install GTK 3, WebKit2 4, Python 3 and the Python 3 GI.
