@@ -1,6 +1,11 @@
 import os
 import urllib
+from bagheader import *
 bilbospath="/".join(os.path.realpath(__file__).split("/")[:-1])
+def downloadNotify(x,fname,y):
+	x.set_destination(fname)
+	dialogdisplay("Download","A download has begun.")
+	return True
 def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,spinner=False,search_engine="https://duckduckgo.com/?q="):
 	if (kiosk==True):
 		traditional=True
@@ -120,19 +125,6 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 			TheThirdOne.set_text("")
 			if (traditional==True):
 				TheThirdOne.set_visible(False)
-	def download(webv):
-		download=WebKit2.Download()
-		fchosern=Gtk.FileChooserDialog(title="Download URI")
-		fchosern.add_buttons(Gtk.STOCK_CANCEL,Gtk.ResponseType.CANCEL,Gtk.STOCK_OPEN,Gtk.ResponseType.OK)
-		retriever=fchosern.run()#not labrador retriever, it is quite important
-		if (retriever==Gtk.ResponseType.CANCEL):
-			fchosern.destroy()
-			return True
-		if (retriever==Gtk.ResponseType.OK):
-			filename=fchosern.get_filename()
-			fchosern.destroy()
-			download.set_destination(filename)
-			#WebKit2.Download.connect("finished",lambda: print("finished"))
 	window=Gtk.Window()
 	#window.set_icon_name("gnome-nettool")
 	icon=bilbospath+"/Bilbo.png"
@@ -174,6 +166,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		webv.connect("create",lambda x,y: openinnewwindow(x,y,kiosk,traditional,private,title))
 		webv.connect("mouse-target-changed",lambda x,y,z: displayuri(x,y,z,The_third_one,traditional))
 		webv.connect("load-failed-with-tls-errors",loadfailed)
+		#WebKit2.Download().connect("decide-destination",downloadNotify)
 		def titlechanged(webv,unn):
 			window.set_title("Baggins 2.0 “Bilbo”, the title of the current page is “"+webv.get_title()+"”")
 		if (title==None):
@@ -252,3 +245,4 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		urlthread=threading.Thread(target=ourthread,args=(None,webv,autoclosable,),daemon=True)
 	urlthread.start()
 	Gtk.main()
+

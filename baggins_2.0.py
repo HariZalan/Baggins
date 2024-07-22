@@ -17,16 +17,11 @@ if (platform.system()!="Linux"):
 	if (platform.system()=="Windows"):
 		print ("Sorry, Baggins will not work on Windows, even if you could install WebKitGTK, exiting, bye.")
 		exit(1)
-def dialogdisplay(caption="Bug",text="The program has a bug, methinks."):
-    ourdialog=Gtk.MessageDialog(flags=0,message_type=Gtk.MessageType.INFO,buttons=Gtk.ButtonsType.OK,text=caption)
-    ourdialog.format_secondary_text(text)
-    ourdialog.run()
-    ourdialog.destroy()
 def wandupd(uri,file):
 	try:
 		OurContent=urllib.request.urlopen(uri).read()
 	except Exception as Extion:
-		print("Failed to update Baggins/get necessary files. Check your internet connection and the availability of raw.githubusercontent.com. The error message:")
+		print("Failed to update Baggins/get necessary files. To solve this, you should check your internet connection and the availability of raw.githubusercontent.com. The error message:")
 		print (str(Extion))
 		exit(1)
 	else:
@@ -37,6 +32,11 @@ def wandupd(uri,file):
 		except Exception as Extion:
 			print ("I/O error, check the permissions, please.")
 			exit(1)
+try:
+	from bagheader import *
+except:
+	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/bagheader.py","bagheader.py")
+	from bagheader import *
 try:
 	from baggins_open_window import *
 except:
@@ -154,7 +154,7 @@ else:
 	kiosk=False
 	#openWebPage(page=url,mainpage=fileurl+"mainpage_current.html",kiosk=True,autoclosable=closable,title=title,search_engine=sEngine)
 if (arglistr.export==True):
-	print ("Are you sure that you want to export all your logins? Your – possibly present – previous export WILL perish. Press enter to do it, ^C to exit.")
+	print ("Are you sure that you want to export all your cookies? Your – possibly present – previous export WILL perish. Press enter to do it, ^C to exit.")
 	try:
 		input()
 	except KeyboardInterrupt:
@@ -167,7 +167,7 @@ if (arglistr.export==True):
 	exportfile.close()
 	exit(0)
 if (arglistr.importdata==True):
-		print ("Are you sure that you want to import your previous logins? Your current ones will be removed. ^C to quit, enter to proceed.")
+		print ("Are you sure that you want to import your previous cookies? Your current ones will be removed. ^C to quit, enter to proceed.")
 		try:
 			input()
 		except KeyboardInterrupt:
