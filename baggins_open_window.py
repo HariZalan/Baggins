@@ -1,5 +1,6 @@
 import os
 import urllib
+import time
 from bagheader import *
 bilbospath="/".join(os.path.realpath(__file__).split("/")[:-1])
 def downloadNotify(x,fname,y):
@@ -74,6 +75,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 			else:
 				entry.set_text("about:home")
 			while True:
+				time.sleep(0.1)
 				if (back!=None and forward!=None):
 					if (webv.can_go_back()):
 						back.set_sensitive(True)
@@ -125,6 +127,20 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 			TheThirdOne.set_text("")
 			if (traditional==True):
 				TheThirdOne.set_visible(False)
+	def goback(webv):
+		def thread():
+			while webv.is_loading():
+				pass
+			webv.go_back()
+		ourThread=threading.Thread(target=thread,daemon=True)
+		ourThread.start()
+	def goforward(webv):
+		def thread():
+			while webv.is_loading():
+				pass
+			webv.go_back()
+		ourThread=threading.Thread(target=thread,daemon=True)
+		ourThread.start()
 	window=Gtk.Window()
 	#window.set_icon_name("gnome-nettool")
 	icon=bilbospath+"/Bilbo.png"
@@ -192,9 +208,9 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		button0=Gtk.Button(label="Go")
 		button0.connect("clicked",lambda x: gotouri(entrie,webv))
 		button=Gtk.Button(label="←")
-		button.connect("clicked",lambda x: webv.go_back())
+		button.connect("clicked",lambda x: goback(webv))
 		button2=Gtk.Button(label="→")
-		button2.connect("clicked",lambda x: webv.go_forward())
+		button2.connect("clicked",lambda x: goforward(webv))
 		button4=Gtk.Button(label="🔍")
 		button4.connect("clicked", lambda x: searchuri(entrie,webv))
 		button5=Gtk.Button(label="⟳")
