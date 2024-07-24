@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 import urllib.request
 import urllib.parse
@@ -7,8 +8,15 @@ import time
 import argparse
 import math
 import re
-import gi
-gi.require_version("Gtk","3.0")
+try:
+	import gi
+except:
+	print ("Please, install GI.")
+	exit(1)
+try:
+	gi.require_version("Gtk","3.0")
+except:
+	print ("Please, install GTK 3.")
 from gi.repository import Gtk
 path="/".join(os.path.realpath(__file__).split("/")[:-1])
 fileurl="file:///"+path+"/"
