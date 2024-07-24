@@ -117,6 +117,8 @@ if (not os.path.exists(path+"/searchengine")):
 	ourFileAgain=open("searchengine","w")
 	ourFileAgain.write("https://duckduckgo.com/?q=")
 	ourFileAgain.close()
+if (not os.path.exists(path+"/baggins_setup.py")):
+	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/baggins_setup.py",path+"/baggins_setup.py")
 sEngineF=open(path+"/searchengine")
 sEngine=sEngineF.read()
 sEngineF.close()
@@ -167,7 +169,7 @@ if (arglistr.export==True):
 		input()
 	except KeyboardInterrupt:
 		exit(0)
-	storage=open(path+"/baggins.storage")
+	storage=open(os.path.expanduser("~")+"/.baggins.storage")
 	storageContent=storage.read()
 	storage.close()
 	exportfile=open(os.path.expanduser("~")+"/baggins.exported","w")
@@ -183,7 +185,7 @@ if (arglistr.importdata==True):
 		toimport=open(os.path.expanduser("~")+"/baggins.exported")
 		toimportc=toimport.read()
 		toimport.close()
-		storage=open(path+"/baggins.storage","w")
+		storage=open(os.path.expanduser("~")+"/.baggins.storage","w")
 		storage.write(toimportc)
 		storage.close()
 		exit(0)

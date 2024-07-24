@@ -188,7 +188,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		if (title==None):
 			webv.connect("notify::title",titlechanged)
 		if (private==False):
-			webv.cookieManager=WebKit2.WebContext.get_default().get_cookie_manager(); WebKit2.CookieManager.set_persistent_storage(webv.cookieManager,bilbospath+"/baggins.storage",WebKit2.CookiePersistentStorage(WebKit2.CookiePersistentStorage.TEXT))
+			webv.cookieManager=WebKit2.WebContext.get_default().get_cookie_manager(); WebKit2.CookieManager.set_persistent_storage(webv.cookieManager,os.path.expanduser("~")+".baggins.storage",WebKit2.CookiePersistentStorage(WebKit2.CookiePersistentStorage.TEXT))
 		settings=webv.get_settings()
 		WebKit2.Settings.set_user_agent_with_application_details(settings,name,version)
 		#WebKit2.CookieManager.set_persistent_storage("baggins.storage")
