@@ -1,13 +1,16 @@
+#!/usr/bin/env python3
 import os
 import urllib
 import time
+import random
 from bagheader import *
 bilbospath="/".join(os.path.realpath(__file__).split("/")[:-1])
+bagpath=os.path.expanduser("~")+"/.baggins"
 def downloadNotify(x,fname,y):
 	x.set_destination(fname)
 	dialogdisplay("Download","A download has begun.")
 	return True
-def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage="https://zalan.withssl.com/en/baggins/mainpage_Bilbo.html",private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,spinner=False,search_engine="https://duckduckgo.com/?q="):
+def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q="):
 	if (kiosk==True):
 		traditional=True
 	import threading
@@ -16,7 +19,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 	import gi
 	gi.require_version("Gtk","3.0")
 	gi.require_version("WebKit2","4.0")
-	from gi.repository import Gtk, WebKit2, Gdk, Gio #or WebKit2, Gtk
+	from gi.repository import Gtk, WebKit2, Gdk, Gio, GLib #or WebKit2, Gtk
 	try:
 		css=b"""
 		button, entry {
@@ -63,7 +66,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 			entry.set_text(webv.get_uri())
 		def searchuri(entry,webv):
 			webv.load_uri(search_engine+entry.get_text())
-	def ourthread(entry=None,webv=WebKit2.WebView(),autoclosable=False,back=None,forward=None):
+	def ourthread(entry=None,webv=WebKit2.WebView(),autoclosable=False,back=None,forward=None,reload=None):
 		if (entry==None):
 			while True:
 				if (webv.get_uri().endswith("#baggins-browser-close-requested") and autoclosable==True):
@@ -99,26 +102,23 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 					else:
 						url=webv.get_uri()
 						entry.set_text("about:home")
-			
-				if (kiosk==True and spinner==True):
-					if (webv.is_loading()):
-						spinnerr.start()
-						webvbox.set_visible(False)
-						spinnerbox.set_visible(True)
-					else:
-						spinnerr.stop()
-						webvbox.set_visible(True)
-						spinnerbox.set_visible(False)		
+				if (webv.is_loading() and reload!=None):
+					#GLib.idle_add(reload.set_label,"🗙")
+					#GLib.idle_add(reload.connect,"clicked",lambda x: webv.stop_loading())
+					reload.set_sensitive(False)
+				else:
+					reload.set_sensitive(True)
+				#else:
+				#	GLib.idle_add(reload.set_label,"⟳")
+				#	GLib.idle_add(reload.connect,"clicked",lambda x: webv.reload())
 	def openinnewwindow(wv,navact,kiosk,traditional,private,title):
 		x=navact.get_request().get_uri()
 		openWebPage(page=x,kiosk=kiosk,traditional=traditional,private=private,title=title)
 		return None
 	The_third_one=Gtk.Label()
-	if (kiosk==True and spinner==True):
-		spinnerr=Gtk.Spinner()
-		spinnerbox=Gtk.Box()
-		spinnerbox.pack_end(spinnerr,expand=True,fill=True,padding=0)
-		spinnerbox.set_visible(False)
+	#if (kiosk==True and spinner==True):
+	#	spinnerr=Gtk.Spinner()
+	#	spinnerr.set_visible(False)
 	def displayuri(attercop,hittestresult,oldtomnoddy,TheThirdOne,traditional):
 		if (hittestresult.context_is_link()==True):
 			TheThirdOne.set_visible(True)
@@ -188,7 +188,8 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		if (title==None):
 			webv.connect("notify::title",titlechanged)
 		if (private==False):
-			webv.cookieManager=WebKit2.WebContext.get_default().get_cookie_manager(); WebKit2.CookieManager.set_persistent_storage(webv.cookieManager,os.path.expanduser("~")+".baggins.storage",WebKit2.CookiePersistentStorage(WebKit2.CookiePersistentStorage.TEXT))
+			webv.cookieManager=WebKit2.WebContext.get_default().get_cookie_manager()
+			WebKit2.CookieManager.set_persistent_storage(webv.cookieManager,bagpath+"/.baggins.storage",WebKit2.CookiePersistentStorage(WebKit2.CookiePersistentStorage.TEXT))
 		settings=webv.get_settings()
 		WebKit2.Settings.set_user_agent_with_application_details(settings,name,version)
 		#WebKit2.CookieManager.set_persistent_storage("baggins.storage")
@@ -215,6 +216,8 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		button4.connect("clicked", lambda x: searchuri(entrie,webv))
 		button5=Gtk.Button(label="⟳")
 		button5.connect("clicked",lambda x: webv.reload())
+		button6=Gtk.Button(label="↧")
+		button6.connect("clicked",lambda x: webv.save_to_file(Gio.File.new_for_path(os.path.expanduser("~")+"/Downloads/"+str(random.randrange(10000))+".mhtml"),WebKit2.SaveMode(0),None,None,None))
 		#button6=Gtk.Button(label="Inspect")
 		#button6.connect("clicked",lambda x: webv.get_inspector().show())
 		box2.pack_start(button,expand=False,fill=False,padding=1)
@@ -223,6 +226,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		box2.pack_start(entrie,expand=True,fill=True,padding=1)
 		box2.pack_start(button0,expand=False,fill=False,padding=1)
 		box2.pack_start(button4,expand=False,fill=False,padding=1)
+		box2.pack_start(button6,expand=False,fill=False,padding=1)
 	#def keypressed(wget,eventitself):
 	#	return False
 	#box2.pack_start(button6,expand=False,fill=False,padding=1)
@@ -251,12 +255,12 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		webvbox=Gtk.Box()
 		webvbox.pack_end(webv,expand=True,fill=True,padding=0)
 		window.box.pack_end(webvbox,expand=True,fill=True,padding=0)
-		if (kiosk==True and spinner==True):
-			window.box.pack_end(spinnerbox,fill=False,expand=False,padding=0)
+		#if (kiosk==True and spinner==True):
+		#	window.box.pack_end(spinnerr,fill=True,expand=False,padding=0)
 	window.add(window.box)
 	window.show_all()
 	if (kiosk==False):
-		urlthread=threading.Thread(target=ourthread,args=(entrie,webv,autoclosable,button,button2,),daemon=True)
+		urlthread=threading.Thread(target=ourthread,args=(entrie,webv,autoclosable,button,button2,button5,),daemon=True)
 	else:
 		urlthread=threading.Thread(target=ourthread,args=(None,webv,autoclosable,),daemon=True)
 	urlthread.start()

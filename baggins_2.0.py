@@ -17,9 +17,13 @@ try:
 	gi.require_version("Gtk","3.0")
 except:
 	print ("Please, install GTK 3.")
+	exit(1)
 from gi.repository import Gtk
 path="/".join(os.path.realpath(__file__).split("/")[:-1])
 fileurl="file:///"+path+"/"
+bagpath=os.path.expanduser("~")+"/.baggins"
+if (not os.path.exists(bagpath)):
+	os.mkdir(bagpath)
 if (platform.system()!="Linux"):
 	print ("Warning: Baggins has been designed for Linux, so it might malfunction on thy platform.")
 	if (platform.system()=="Windows"):
@@ -43,22 +47,24 @@ def wandupd(uri,file):
 try:
 	from bagheader import *
 except:
-	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/bagheader.py","bagheader.py")
+	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/bagheader.py",path+"/bagheader.py")
 	from bagheader import *
 try:
 	from baggins_open_window import *
 except:
-	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/baggins_open_window.py","baggins_open_window.py")
+	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/baggins_open_window.py",path+"/baggins_open_window.py")
 	from baggins_open_window import *
 argpersar=argparse.ArgumentParser()
 argpersar.add_argument("-t","--traditional",action="store_true")
 argpersar.add_argument("-p","--private",action="store_true")
+argpersar.add_argument("-s","--setup",action="store_true")
 argpersar.add_argument("-e","--export",action="store_true")
 argpersar.add_argument("-i","--importdata",action="store_true")
 argpersar.add_argument("-u","--update",action="store_true")
 argpersar.add_argument("-k","--kiosk",action="store_true")
 argpersar.add_argument("-0","--none",action="store_true")
 argpersar.add_argument("-c","--closable",action="store_true")
+argpersar.add_argument("-a","--createapplication",action="store_true")
 argpersar.add_argument("url",nargs="?")
 argpersar.add_argument("--title",nargs="?")
 arglistr=argpersar.parse_args()
@@ -113,15 +119,20 @@ if (not os.path.exists(path+"/mainpage_current.html")):
 #Check the existance of Bilbo's picture.
 if (not os.path.exists(path+"/Bilbo.png")):
 	wandupd(getconfcontent[1],path+"/Bilbo.png")
-if (not os.path.exists(path+"/searchengine")):
-	ourFileAgain=open("searchengine","w")
+if (not os.path.exists(bagpath+"/searchengine")):
+	ourFileAgain=open(bagpath+"/searchengine","w")
 	ourFileAgain.write("https://duckduckgo.com/?q=")
 	ourFileAgain.close()
 if (not os.path.exists(path+"/baggins_setup.py")):
 	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/baggins_setup.py",path+"/baggins_setup.py")
-sEngineF=open(path+"/searchengine")
+if (not os.path.exists(path+"/baggins_create_application.py")):
+	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/baggins_create_application.py",path+"/baggins_create_application.py")
+sEngineF=open(bagpath+"/searchengine")
 sEngine=sEngineF.read()
 sEngineF.close()
+if (arglistr.createapplication==True):
+	import baggins_create_application
+	exit(0)
 if (arglistr.update==True):
 	getgetconf()
 	getconfcontent=open(path+"/get.conf")
@@ -148,28 +159,13 @@ if (arglistr.update==True):
 url=arglistr.url
 closable=arglistr.closable
 title=arglistr.title
-if (arglistr.private==True):
-	private=True	#openWebPage(mainpage=fileurl+"mainpage_current.html",private=True,search_engine=sEngine)
-else:
-	private=False
-if (arglistr.none==True):
-	exit(0)
-if (arglistr.traditional==True):
-	traditional=True	#openWebPage(mainpage=fileurl+"mainpage_current.html",traditional=True,search_engine=sEngine)
-else:
-	traditional=False
-if (arglistr.kiosk==True):
-	kiosk=True
-else:
-	kiosk=False
-	#openWebPage(page=url,mainpage=fileurl+"mainpage_current.html",kiosk=True,autoclosable=closable,title=title,search_engine=sEngine)
 if (arglistr.export==True):
 	print ("Are you sure that you want to export all your cookies? Your – possibly present – previous export WILL perish. Press enter to do it, ^C to exit.")
 	try:
 		input()
 	except KeyboardInterrupt:
 		exit(0)
-	storage=open(os.path.expanduser("~")+"/.baggins.storage")
+	storage=open(bagpath+"/.baggins.storage")
 	storageContent=storage.read()
 	storage.close()
 	exportfile=open(os.path.expanduser("~")+"/baggins.exported","w")
@@ -185,9 +181,27 @@ if (arglistr.importdata==True):
 		toimport=open(os.path.expanduser("~")+"/baggins.exported")
 		toimportc=toimport.read()
 		toimport.close()
-		storage=open(os.path.expanduser("~")+"/.baggins.storage","w")
+		storage=open(bagpath+"/.baggins.storage","w")
 		storage.write(toimportc)
 		storage.close()
 		exit(0)
+if (arglistr.setup==True):
+	import baggins_setup
+	exit(0)
+if (arglistr.private==True):
+	private=True	#openWebPage(mainpage=fileurl+"mainpage_current.html",private=True,search_engine=sEngine)
+else:
+	private=False
+if (arglistr.none==True):
+	exit(0)
+if (arglistr.traditional==True):
+	traditional=True	#openWebPage(mainpage=fileurl+"mainpage_current.html",traditional=True,search_engine=sEngine)
+else:
+	traditional=False
+if (arglistr.kiosk==True):
+	kiosk=True
+else:
+	kiosk=False
+	#openWebPage(page=url,mainpage=fileurl+"mainpage_current.html",kiosk=True,autoclosable=closable,title=title,search_engine=sEngine)
 openWebPage(mainpage=fileurl+"mainpage_current.html",search_engine=sEngine,private=private,page=url,autoclosable=closable,title=title,kiosk=kiosk,traditional=traditional)
 exit(0)
