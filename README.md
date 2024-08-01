@@ -1,3 +1,5 @@
+Note: **Please, do not use this branch, it is obsolete, see the current one at https://github.com/HariZalan/Baggins to use a somewhat more recent version.**
+
 Baggins is a browser written using WebKitGTK.
 
 Installation instructions:
