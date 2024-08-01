@@ -46,14 +46,26 @@ def wandupd(uri,file):
 			exit(1)
 try:
 	from bagheader import *
-except:
-	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/bagheader.py",path+"/bagheader.py")
-	from bagheader import *
+except Exception as e:
+	if (not os.path.exists(path+"/bagheader.py")):
+		wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0/bagheader.py",path+"/bagheader.py")
+		from bagheader import *
+	else:
+		print (e)
 try:
 	from baggins_open_window import *
-except:
-	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/baggins_open_window.py",path+"/baggins_open_window.py")
-	from baggins_open_window import *
+except Exception as e:
+	if (not os.path.exists(path+"/baggins_open_window.py")):
+		wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0/baggins_open_window.py",path+"/baggins_open_window.py")
+		from baggins_open_window import *
+	else:
+		print (e)
+#try:
+#	from baggins_open_window import *
+#except:
+#	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0/baggins_open_window.py",path+"/baggins_open_window.py")
+#	from baggins_open_window import *
+from baggins_open_window import *
 argpersar=argparse.ArgumentParser()
 argpersar.add_argument("-t","--traditional",action="store_true")
 argpersar.add_argument("-p","--private",action="store_true")
@@ -67,10 +79,11 @@ argpersar.add_argument("-c","--closable",action="store_true")
 argpersar.add_argument("-a","--createapplication",action="store_true")
 argpersar.add_argument("url",nargs="?")
 argpersar.add_argument("--title",nargs="?")
+argpersar.add_argument("--aid",nargs="?")
 arglistr=argpersar.parse_args()
 #getgetconfconf
 if (not os.path.exists(path+"/getget.conf.conf")):
-	wandupd(uri="https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/getget.conf.conf",file=path+"/getget.conf.conf")
+	wandupd(uri="https://raw.githubusercontent.com/HariZalan/Baggins/2.0/getget.conf.conf",file=path+"/getget.conf.conf")
 #support probe
 endofsupport=1788238799
 leftsecs=endofsupport-time.time()
@@ -124,9 +137,9 @@ if (not os.path.exists(bagpath+"/searchengine")):
 	ourFileAgain.write("https://duckduckgo.com/?q=")
 	ourFileAgain.close()
 if (not os.path.exists(path+"/baggins_setup.py")):
-	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/baggins_setup.py",path+"/baggins_setup.py")
+	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0/baggins_setup.py",path+"/baggins_setup.py")
 if (not os.path.exists(path+"/baggins_create_application.py")):
-	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0-alpha/baggins_create_application.py",path+"/baggins_create_application.py")
+	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.0/baggins_create_application.py",path+"/baggins_create_application.py")
 sEngineF=open(bagpath+"/searchengine")
 sEngine=sEngineF.read()
 sEngineF.close()
@@ -159,6 +172,7 @@ if (arglistr.update==True):
 url=arglistr.url
 closable=arglistr.closable
 title=arglistr.title
+aid=arglistr.aid
 if (arglistr.export==True):
 	print ("Are you sure that you want to export all your cookies? Your – possibly present – previous export WILL perish. Press enter to do it, ^C to exit.")
 	try:
@@ -203,5 +217,5 @@ if (arglistr.kiosk==True):
 else:
 	kiosk=False
 	#openWebPage(page=url,mainpage=fileurl+"mainpage_current.html",kiosk=True,autoclosable=closable,title=title,search_engine=sEngine)
-openWebPage(mainpage=fileurl+"mainpage_current.html",search_engine=sEngine,private=private,page=url,autoclosable=closable,title=title,kiosk=kiosk,traditional=traditional)
+openWebPage(mainpage=fileurl+"mainpage_current.html",search_engine=sEngine,private=private,page=url,autoclosable=closable,title=title,kiosk=kiosk,traditional=traditional,aid=aid)
 exit(0)

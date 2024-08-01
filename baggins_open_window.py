@@ -10,7 +10,9 @@ def downloadNotify(x,fname,y):
 	x.set_destination(fname)
 	dialogdisplay("Download","A download has begun.")
 	return True
-def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q="):
+def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins"):
+	if (aid==None):
+		aid="org.freedesktop.Baggins"
 	if (kiosk==True):
 		traditional=True
 	import threading
@@ -20,6 +22,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 	gi.require_version("Gtk","3.0")
 	gi.require_version("WebKit2","4.0")
 	from gi.repository import Gtk, WebKit2, Gdk, Gio, GLib #or WebKit2, Gtk
+	GLib.set_prgname(aid)
 	try:
 		css=b"""
 		button, entry {
@@ -265,4 +268,3 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		urlthread=threading.Thread(target=ourthread,args=(None,webv,autoclosable,),daemon=True)
 	urlthread.start()
 	Gtk.main()
-
