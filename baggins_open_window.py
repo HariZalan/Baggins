@@ -3,13 +3,12 @@ import os
 import urllib
 import time
 import random
-from bagheader import *
 bilbospath="/".join(os.path.realpath(__file__).split("/")[:-1])
 bagpath=os.path.expanduser("~")+"/.baggins"
-def downloadNotify(x,fname,y):
-	x.set_destination(fname)
-	dialogdisplay("Download","A download has begun.")
-	return True
+#def downloadNotify(x,fname,y):
+#	x.set_destination(fname)
+#	dialogdisplay("Download","A download has begun.")
+#	return True
 def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins"):
 	if (aid==None):
 		aid="org.freedesktop.Baggins"
@@ -22,6 +21,7 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 	gi.require_version("Gtk","3.0")
 	gi.require_version("WebKit2","4.0")
 	from gi.repository import Gtk, WebKit2, Gdk, Gio, GLib #or WebKit2, Gtk
+	from bagheader import dialogdisplay
 	GLib.set_prgname(aid)
 	try:
 		css=b"""
@@ -182,6 +182,13 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 				""",uri,uri)
 			return True
 		webv=WebKit2.WebView()
+		def decdest(download,theroad):
+			destination=theroad
+			download.set_destination(GLib.filename_to_uri(os.path.expanduser("~")+"/"+"Downloads/"+destination))
+			dialogdisplay("Download","Download started at ~/Downloads/"+destination)
+		def downstart(session,download):
+			download.connect("decide-destination",decdest)
+		WebKit2.WebContext.get_default().connect("download-started",downstart)
 		webv.connect("create",lambda x,y: openinnewwindow(x,y,kiosk,traditional,private,title))
 		webv.connect("mouse-target-changed",lambda x,y,z: displayuri(x,y,z,The_third_one,traditional))
 		webv.connect("load-failed-with-tls-errors",loadfailed)
