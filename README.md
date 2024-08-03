@@ -26,6 +26,6 @@ Or, if you do not have root access:
 ```bash
 cd ~
 git clone https://github.com/HariZalan/Baggins
-ln -s ~/Baggins/baggins_2.0.py ~/.local/bin
+ln -s ~/Baggins/baggins_2.0.py ~/.local/bin/baggins
 ```
 Then install GTK 3, WebKit2 4, Python 3 and the Python GI. (For that, you must have root access, methinks.)
