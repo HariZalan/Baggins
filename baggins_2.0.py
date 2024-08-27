@@ -203,19 +203,18 @@ if (arglistr.setup==True):
 	import baggins_setup
 	exit(0)
 if (arglistr.private==True):
-	private=True	#openWebPage(mainpage=fileurl+"mainpage_current.html",private=True,search_engine=sEngine)
+	private=True
 else:
 	private=False
 if (arglistr.none==True):
 	exit(0)
 if (arglistr.traditional==True):
-	traditional=True	#openWebPage(mainpage=fileurl+"mainpage_current.html",traditional=True,search_engine=sEngine)
+	traditional=True
 else:
 	traditional=False
 if (arglistr.kiosk==True):
 	kiosk=True
 else:
 	kiosk=False
-	#openWebPage(page=url,mainpage=fileurl+"mainpage_current.html",kiosk=True,autoclosable=closable,title=title,search_engine=sEngine)
 openWebPage(mainpage=fileurl+"mainpage_current.html",search_engine=sEngine,private=private,page=url,autoclosable=closable,title=title,kiosk=kiosk,traditional=traditional,aid=aid)
 exit(0)
