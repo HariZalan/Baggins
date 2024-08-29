@@ -5,11 +5,16 @@ import time
 import random
 bilbospath="/".join(os.path.realpath(__file__).split("/")[:-1])
 bagpath=os.path.expanduser("~")+"/.baggins"
+import gi
+gi.require_version("Gtk","3.0")
+gi.require_version("WebKit2","4.0")
+from gi.repository import Gtk, WebKit2, Gdk, Gio, GLib #or WebKit2, Gtk
+from bagheader import dialogdisplay
 #def downloadNotify(x,fname,y):
 #	x.set_destination(fname)
 #	dialogdisplay("Download","A download has begun.")
 #	return True
-def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins"):
+def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins"):
 	if (aid==None):
 		aid="org.freedesktop.Baggins"
 	if (kiosk==True):
@@ -17,11 +22,6 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 	import threading
 	if (page=="about:home" or page==None):
 		page=mainpage
-	import gi
-	gi.require_version("Gtk","3.0")
-	gi.require_version("WebKit2","4.0")
-	from gi.repository import Gtk, WebKit2, Gdk, Gio, GLib #or WebKit2, Gtk
-	from bagheader import dialogdisplay
 	GLib.set_prgname(aid)
 	try:
 		css=b"""
@@ -144,7 +144,6 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 			webv.go_back()
 		ourThread=threading.Thread(target=thread,daemon=True)
 		ourThread.start()
-	window=Gtk.Window()
 	#window.set_icon_name("gnome-nettool")
 	icon=bilbospath+"/Bilbo.png"
 	#window.set_icon("/".join(os.path.realpath(__file__).split("/")[:-1])+"/Bilbo.png")
@@ -193,10 +192,6 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 		webv.connect("mouse-target-changed",lambda x,y,z: displayuri(x,y,z,The_third_one,traditional))
 		webv.connect("load-failed-with-tls-errors",loadfailed)
 		#WebKit2.Download().connect("decide-destination",downloadNotify)
-		def titlechanged(webv,unn):
-			window.set_title("Baggins 2.0 “Bilbo”, the title of the current page is “"+webv.get_title()+"”")
-		if (title==None):
-			webv.connect("notify::title",titlechanged)
 		if (private==False):
 			webv.cookieManager=WebKit2.WebContext.get_default().get_cookie_manager()
 			WebKit2.CookieManager.set_persistent_storage(webv.cookieManager,bagpath+"/.baggins.storage",WebKit2.CookiePersistentStorage(WebKit2.CookiePersistentStorage.TEXT))
@@ -240,38 +235,43 @@ def openWebPage(page=None,traditional=False,webv=None,name="Baggins",version="2.
 	#def keypressed(wget,eventitself):
 	#	return False
 	#box2.pack_start(button6,expand=False,fill=False,padding=1)
-	window.set_size_request(1000,1000)
-	if (title==None):
-		window.set_title("Baggins 2.0 “Bilbo”")
-	else:
-		window.set_title(title)
-	window.connect("destroy",Gtk.main_quit)
 	#window.connect("key-press-event",keypressed)
 	#window.add_accelerator(button2,"<Control>d","clicked")
-	window.box=Gtk.Box(orientation=Gtk.STYLE_CLASS_VERTICAL)
+	box=Gtk.Box(orientation=Gtk.STYLE_CLASS_VERTICAL)
 	if (traditional==False):
-		window.box.pack_start(webv,expand=True,fill=True,padding=0)
+		box.pack_start(webv,expand=True,fill=True,padding=0)
 		if (kiosk==False):
-			window.box.pack_end(box2,expand=False,fill=False,padding=0)
-		window.box.pack_end(The_third_one,expand=False,fill=False,padding=0)
+			box.pack_end(box2,expand=False,fill=False,padding=0)
+		box.pack_end(The_third_one,expand=False,fill=False,padding=0)
 		if (traditional==True):
 			The_third_one.set_visible(False)
 	else:
-		window.box.pack_end(The_third_one,expand=False,fill=False,padding=0)
+		box.pack_end(The_third_one,expand=False,fill=False,padding=0)
 		if (kiosk==False):
-			window.box.pack_start(box2,expand=False,fill=False,padding=0)
+			box.pack_start(box2,expand=False,fill=False,padding=0)
 		if (traditional==True):
 			The_third_one.set_visible(False)
 		webvbox=Gtk.Box()
 		webvbox.pack_end(webv,expand=True,fill=True,padding=0)
-		window.box.pack_end(webvbox,expand=True,fill=True,padding=0)
+		box.pack_end(webvbox,expand=True,fill=True,padding=0)
 		#if (kiosk==True and spinner==True):
-		#	window.box.pack_end(spinnerr,fill=True,expand=False,padding=0)
-	window.add(window.box)
-	window.show_all()
+		#	box.pack_end(spinnerr,fill=True,expand=False,padding=0)
+	#nb=Gtk.Notebook()
+	#nb.new()
+	#nb.append_page(box)
+	#window.add(nb)
 	if (kiosk==False):
 		urlthread=threading.Thread(target=ourthread,args=(entrie,webv,autoclosable,button,button2,button5,),daemon=True)
 	else:
 		urlthread=threading.Thread(target=ourthread,args=(None,webv,autoclosable,),daemon=True)
 	urlthread.start()
+	return box
+def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins"):
+	box=openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid)
+	window=Gtk.Window()
+	window.add(box)
+	window.set_size_request(1000,1000)
+	window.set_title(title or "Baggins 2.1 “Balin Fundin’s son”")
+	window.show_all()
+	window.connect("destroy",Gtk.main_quit)
 	Gtk.main()
