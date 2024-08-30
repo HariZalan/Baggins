@@ -22,7 +22,6 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 	import threading
 	if (page=="about:home" or page==None):
 		page=mainpage
-	GLib.set_prgname(aid)
 	try:
 		css=b"""
 		button, entry {
@@ -213,15 +212,17 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		entrie.connect("activate",lambda x: searchorgo(entrie,webv))
 		button0=Gtk.Button(label="Go")
 		button0.connect("clicked",lambda x: gotouri(entrie,webv))
-		button=Gtk.Button(label="←")
+		button=Gtk.Button()
+		button.add(Gtk.Arrow(arrow_type=Gtk.ArrowType.LEFT,shadow_type=Gtk.ShadowType.NONE))
 		button.connect("clicked",lambda x: goback(webv))
-		button2=Gtk.Button(label="→")
+		button2=Gtk.Button()
+		button2.add(Gtk.Arrow(arrow_type=Gtk.ArrowType.RIGHT,shadow_type=Gtk.ShadowType.NONE))
 		button2.connect("clicked",lambda x: goforward(webv))
-		button4=Gtk.Button(label="🔍")
+		button4=Gtk.Button.new_from_icon_name("system-search-symbolic",Gtk.IconSize.MENU)
 		button4.connect("clicked", lambda x: searchuri(entrie,webv))
-		button5=Gtk.Button(label="⟳")
+		button5=Gtk.Button.new_from_icon_name("view-refresh-symbolic",Gtk.IconSize.MENU)
 		button5.connect("clicked",lambda x: webv.reload())
-		button6=Gtk.Button(label="↧")
+		button6=Gtk.Button.new_from_icon_name("folder-download-symbolic",Gtk.IconSize.MENU)
 		button6.connect("clicked",lambda x: webv.save_to_file(Gio.File.new_for_path(os.path.expanduser("~")+"/Downloads/"+str(random.randrange(10000))+".mhtml"),WebKit2.SaveMode(0),None,None,None))
 		#button6=Gtk.Button(label="Inspect")
 		#button6.connect("clicked",lambda x: webv.get_inspector().show())
@@ -266,20 +267,27 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		urlthread=threading.Thread(target=ourthread,args=(None,webv,autoclosable,),daemon=True)
 	urlthread.start()
 	return box
-def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins"):
+def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid=None,tabbed=False):
 	box=openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid)
 	window=Gtk.Window()
-	nb=Gtk.Notebook()
-	nb.new()
-	nb.append_page(box)
-	window.add(nb)
-	b=Gtk.Button(label="+")
-	b.connect("clicked",lambda x: nb.append_page(openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid)))
-	hb=Gtk.HeaderBar()
-	hb.set_show_close_button(True)
-	hb.pack_start(b)
-	window.set_titlebar(hb)
+	if (tabbed):
+		def newtab(x):
+			box2=openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid)
+			GLib.idle_add(nb.append_page,box2)
+		nb=Gtk.Notebook()
+		nb.new()
+		nb.append_page(box)
+		window.add(nb)
+		b=Gtk.Button.new_from_icon_name("tab-new",Gtk.IconSize.MENU)
+		b.connect("clicked",newtab)
+		hb=Gtk.HeaderBar()
+		hb.set_show_close_button(True)
+		hb.pack_start(b)
+		window.set_titlebar(hb)
+	else:
+		window.add(box)
 	window.set_size_request(1000,1000)
+	GLib.set_prgname(aid or "org.freedesktop.Baggins")
 	window.set_title(title or "Baggins 2.1 “Balin Fundin’s son”")
 	window.show_all()
 	window.connect("destroy",Gtk.main_quit)
