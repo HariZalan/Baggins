@@ -3,7 +3,7 @@ import os
 import urllib
 import time
 import random
-bilbospath="/".join(os.path.realpath(__file__).split("/")[:-1])
+bilbospath=os.path.dirname(os.path.abspath(__file__))
 bagpath=os.path.expanduser("~")+"/.baggins"
 import gi
 gi.require_version("Gtk","3.0")
