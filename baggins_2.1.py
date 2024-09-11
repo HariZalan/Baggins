@@ -89,7 +89,7 @@ if (not os.path.exists(path+"/getget.conf.conf")):
 endofsupport=1788238799
 leftsecs=endofsupport-time.time()
 if (leftsecs > 0 and leftsecs<=864000):
-    text="The support of your version will end in "+str(leftsecs)+" seconds, what is equivalent by " + str(leftsecs/86400) + " days. Please, consider upgrading to a newer one."
+    text="The support of your version will end in "+str(leftsecs)+" seconds, which is equivalent by " + str(leftsecs/86400) + " days. Please, consider upgrading to a newer one."
     print (text)
     dialogdisplay(caption="Nearby end of support",text=text)
 if (time.time()>endofsupport): # September 1 2026, 04:59:59 GMT

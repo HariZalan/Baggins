@@ -203,6 +203,23 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		WebKit2.Settings.set_enable_developer_extras(settings,True)
 		WebKit2.Settings.set_enable_back_forward_navigation_gestures(settings,True)
 		WebKit2.Settings.set_default_charset(settings,"utf-8")
+		WebKit2.Settings.set_enable_caret_browsing(settings,True)
+		WebKit2.Settings.set_javascript_can_access_clipboard(settings,True)
+		def cameraandmicrophone():
+			if (WebKit2.UserMediaPermissionRequest.props.is_for_audio_device or WebKit2.UserMediaPermissionRequest.props.is_for_video_device):
+				dialogue=Gtk.Dialog(title="Media permission request",flags=0)
+				dialogue.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK)
+				lambeau=Gtk.Label(label="This site wants to use the camera or the microphone.")
+				box=dialogue.get_content_area()
+				box.add(lambeau)
+				dialogue.show_all()
+				responsum=dialogue.run()
+				if (responsum==Gtk.ResponseType.OK):
+					WebKit2.UserMediaPermissionRequest.allow()
+				else:
+					WebKit2.UserMediaPermissionRequest.deny()
+				return False
+		#WebKit2.UserMediaPermissionRequest.connect("notify",lambda x,y,z: cameraandmicrophone())
 		#if (private==True):
 		#	pass#WebKit2.Settings.set_enable_private_browsing(settings,True) deprecated
 	if (kiosk==False):
