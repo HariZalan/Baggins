@@ -159,7 +159,7 @@ if (arglistr.update==True):
 	try:
 		pyscriptcontent=urllib.request.urlopen(getconfcontent[0]).read().decode()
 	except Exception as myException:
-		print ("Failed to update Baggins. Check your internet connection and the availability of zalan.withssl.com. The error message:")
+		print ("Failed to update Baggins. Check your internet connection and the availability of raw.githubusercontent.com. The error message:")
 		print (str(myException))
 	else:
 		if (pyscriptcontent==""):
