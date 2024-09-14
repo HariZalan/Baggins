@@ -18,8 +18,6 @@ from bagheader import dialogdisplay
 #	dialogdisplay("Download","A download has begun.")
 #	return True
 def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins",parent=None):
-	if not kiosk:
-		tabbed=True
 	if (aid==None):
 		aid="org.freedesktop.Baggins"
 	if (kiosk==True):
@@ -298,6 +296,9 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 	return box
 def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid=None,tabbed=False):
 	window=Gtk.Window()
+	box=openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid)
+	if not kiosk:
+		tabbed=True
 	if (tabbed):
 		nb=Gtk.Notebook()
 		nb.new()
@@ -305,7 +306,6 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpag
 			#GLib.idle_add(lambda: nb.append_page(openWebPage2(page=page, traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb)))
 			nb.append_page(openWebPage2(page=page, traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb))
 			nb.show_all()
-		box=openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid)
 		nb.append_page(box)
 		window.add(nb)
 		b=Gtk.Button.new_from_icon_name("tab-new",Gtk.IconSize.MENU)
