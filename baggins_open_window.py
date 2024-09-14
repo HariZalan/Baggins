@@ -7,14 +7,19 @@ bilbospath=os.path.dirname(os.path.abspath(__file__))
 bagpath=os.path.expanduser("~")+"/.baggins"
 import gi
 gi.require_version("Gtk","3.0")
-gi.require_version("WebKit2","4.0")
+try:
+	gi.require_version("WebKit2","4.1")
+except:
+	gi.require_version("WebKit2","4.0")
 from gi.repository import Gtk, WebKit2, Gdk, Gio, GLib #or WebKit2, Gtk
 from bagheader import dialogdisplay
 #def downloadNotify(x,fname,y):
 #	x.set_destination(fname)
 #	dialogdisplay("Download","A download has begun.")
 #	return True
-def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins"):
+def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins",parent=None):
+	if not kiosk:
+		tabbed=True
 	if (aid==None):
 		aid="org.freedesktop.Baggins"
 	if (kiosk==True):
@@ -76,20 +81,20 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		else:
 			url=webv.get_uri()
 			if (url!=mainpage): # Do not show URL at mainpage
-				entry.set_text(url)
+				GLib.idle_add(lambda: entry.set_text(url))
 			else:
-				entry.set_text("about:home")
+				GLib.idle_add(lambda: entry.set_text("about:home"))
 			while True:
 				time.sleep(0.1)
 				if (back!=None and forward!=None):
 					if (webv.can_go_back()):
-						back.set_sensitive(True)
+						GLib.idle_add(lambda: back.set_sensitive(True))
 					else:
-						back.set_sensitive(False)
+						GLib.idle_add(lambda: back.set_sensitive(False))
 					if (webv.can_go_forward()):
-						forward.set_sensitive(True)
+						GLib.idle_add(lambda: forward.set_sensitive(True))
 					else:
-						forward.set_sensitive(False)
+						GLib.idle_add(lambda: forward.set_sensitive(False))
 				if (webv.get_uri().endswith("#baggins-browser-close-requested") and autoclosable==True):
 					Gtk.main_quit()
 				if (url!=webv.get_uri()):
@@ -98,18 +103,18 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 						if (autoclosable==True and url.endswith("#baggins-browser-close-requested")):
 							Gtk.main_quit()
 						try:
-							entry.set_text(WebKit2.uri_for_display(url))
+							GLib.idle_add(lambda: entry.set_text(WebKit2.uri_for_display(url)))
 						except:
 							pass
 					else:
 						url=webv.get_uri()
-						entry.set_text("about:home")
+						GLib.idle_add(lambda: entry.set_text("about:home"))
 				if (webv.is_loading() and reload!=None):
 					#GLib.idle_add(reload.set_label,"🗙")
 					#GLib.idle_add(reload.connect,"clicked",lambda x: webv.stop_loading())
-					reload.set_sensitive(False)
+					GLib.idle_add(lambda: reload.set_sensitive(False))
 				else:
-					reload.set_sensitive(True)
+					GLib.idle_add(lambda: reload.set_sensitive(True))
 				#else:
 				#	GLib.idle_add(reload.set_label,"⟳")
 				#	GLib.idle_add(reload.connect,"clicked",lambda x: webv.reload())
@@ -205,21 +210,27 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		WebKit2.Settings.set_default_charset(settings,"utf-8")
 		WebKit2.Settings.set_enable_caret_browsing(settings,True)
 		WebKit2.Settings.set_javascript_can_access_clipboard(settings,True)
-		def cameraandmicrophone():
-			if (WebKit2.UserMediaPermissionRequest.props.is_for_audio_device or WebKit2.UserMediaPermissionRequest.props.is_for_video_device):
-				dialogue=Gtk.Dialog(title="Media permission request",flags=0)
-				dialogue.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK)
-				lambeau=Gtk.Label(label="This site wants to use the camera or the microphone.")
+		def terminated(hight_reason):
+			webv.set_alternate_html("The web process has terminated unexpectedly.")
+		def cameraandmicrophone(a,b):
+			if 1:
+				dialogue=Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,title="Permission request",flags=0,buttons=Gtk.ButtonsType.YES_NO)
+				lambeau=Gtk.Label(label="This site wants to request a permission.")
 				box=dialogue.get_content_area()
 				box.add(lambeau)
 				dialogue.show_all()
 				responsum=dialogue.run()
-				if (responsum==Gtk.ResponseType.OK):
-					WebKit2.UserMediaPermissionRequest.allow()
+				dialogue.destroy()
+				if (responsum==Gtk.ResponseType.YES):
+					b.allow()
 				else:
-					WebKit2.UserMediaPermissionRequest.deny()
+					b.deny()
 				return False
-		#WebKit2.UserMediaPermissionRequest.connect("notify",lambda x,y,z: cameraandmicrophone())
+		#pm=WebKit2.UserMediaPermissionRequest
+		#print(type(pm))
+		#pm.notify()
+		webv.connect("permission-request", cameraandmicrophone)
+		webv.connect("web-process-terminated",terminated)
 		#if (private==True):
 		#	pass#WebKit2.Settings.set_enable_private_browsing(settings,True) deprecated
 	if (kiosk==False):
@@ -283,16 +294,18 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 	else:
 		urlthread=threading.Thread(target=ourthread,args=(None,webv,autoclosable,),daemon=True)
 	urlthread.start()
+	#box.set_parent(parent) if parent else False
 	return box
 def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid=None,tabbed=False):
-	box=openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid)
 	window=Gtk.Window()
 	if (tabbed):
-		def newtab(x):
-			box2=openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid)
-			GLib.idle_add(nb.append_page,box2)
 		nb=Gtk.Notebook()
 		nb.new()
+		def newtab(x):
+			#GLib.idle_add(lambda: nb.append_page(openWebPage2(page=page, traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb)))
+			nb.append_page(openWebPage2(page=page, traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb))
+			nb.show_all()
+		box=openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid)
 		nb.append_page(box)
 		window.add(nb)
 		b=Gtk.Button.new_from_icon_name("tab-new",Gtk.IconSize.MENU)
@@ -303,7 +316,7 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpag
 		window.set_titlebar(hb)
 	else:
 		window.add(box)
-	window.set_size_request(1000,1000)
+	window.set_default_size(1000,1000)
 	GLib.set_prgname(aid or "org.freedesktop.Baggins")
 	window.set_title(title or "Baggins 2.1 “Balin Fundin’s son”")
 	window.show_all()

@@ -80,7 +80,6 @@ argpersar.add_argument("-a","--createapplication",action="store_true")
 argpersar.add_argument("url",nargs="?")
 argpersar.add_argument("--title",nargs="?")
 argpersar.add_argument("--aid",nargs="?")
-argpersar.add_argument("--tabbed",action="store_true")
 arglistr=argpersar.parse_args()
 #getgetconfconf
 if (not os.path.exists(path+"/getget.conf.conf")):
@@ -208,6 +207,5 @@ if (arglistr.none==True):
 	exit(0)
 traditional=arglistr.traditional or False
 kiosk=arglistr.kiosk or False
-tabbed=arglistr.tabbed or False
-openWebPage(mainpage=fileurl+"mainpage_current.html",search_engine=sEngine,private=private,page=url,autoclosable=closable,title=title,kiosk=kiosk,traditional=traditional,aid=aid,tabbed=tabbed)
+openWebPage(mainpage=fileurl+"mainpage_current.html",search_engine=sEngine,private=private,page=url,autoclosable=closable,title=title,kiosk=kiosk,traditional=traditional,aid=aid)
 exit(0)
