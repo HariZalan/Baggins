@@ -71,7 +71,7 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 			entry.set_text(webv.get_uri())
 		def searchuri(entry,webv):
 			webv.load_uri(search_engine+entry.get_text())
-	def ourthread(entry=None,webv=WebKit2.WebView(),autoclosable=False,back=None,forward=None,reload=None):
+	def ourthread(entry=None,webv=WebKit2.WebView(),autoclosable=False,back=None,forward=None,reload=None,box=None):
 		if (entry==None):
 			while True:
 				if (webv.get_uri().endswith("#baggins-browser-close-requested") and autoclosable==True):
@@ -281,6 +281,8 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		webvbox=Gtk.Box()
 		webvbox.pack_end(webv,expand=True,fill=True,padding=0)
 		box.pack_end(webvbox,expand=True,fill=True,padding=0)
+		if(box!=None):
+			box.title=webv.get_title()
 		#if (kiosk==True and spinner==True):
 		#	box.pack_end(spinnerr,fill=True,expand=False,padding=0)
 	#nb=Gtk.Notebook()
@@ -288,7 +290,7 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 	#nb.append_page(box)
 	#window.add(nb)
 	if (kiosk==False):
-		urlthread=threading.Thread(target=ourthread,args=(entrie,webv,autoclosable,button,button2,button5,),daemon=True)
+		urlthread=threading.Thread(target=ourthread,args=(entrie,webv,autoclosable,button,button2,button5,box,),daemon=True)
 	else:
 		urlthread=threading.Thread(target=ourthread,args=(None,webv,autoclosable,),daemon=True)
 	urlthread.start()
@@ -304,15 +306,25 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpag
 		nb.new()
 		def newtab(x):
 			#GLib.idle_add(lambda: nb.append_page(openWebPage2(page=page, traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb)))
-			nb.append_page(openWebPage2(page=page, traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb))
+			box=openWebPage2(page=page, traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb)
+			nb.append_page(box)
 			nb.show_all()
+			nb.set_current_page(-1)
+			tab=nb.get_nth_page(-1)
+			nb.set_tab_reorderable(tab,True)
+			#nb.set_tab_label(tab,Gtk.Label(label=box.title))
 		nb.append_page(box)
 		window.add(nb)
 		b=Gtk.Button.new_from_icon_name("tab-new",Gtk.IconSize.MENU)
 		b.connect("clicked",newtab)
+		b2=Gtk.Button.new_from_icon_name("application-exit-symbolic",Gtk.IconSize.MENU)
+		def closetab(x):
+			nb.remove_page(nb.get_current_page())
+		b2.connect("clicked",closetab)
 		hb=Gtk.HeaderBar()
 		hb.set_show_close_button(True)
 		hb.pack_start(b)
+		hb.pack_start(b2)
 		window.set_titlebar(hb)
 	else:
 		window.add(box)
