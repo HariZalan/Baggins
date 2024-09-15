@@ -296,7 +296,7 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 	urlthread.start()
 	#box.set_parent(parent) if parent else False
 	return box
-def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid=None,tabbed=False):
+def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid=None,tabbed=False,vertabbed=True):
 	window=Gtk.Window()
 	box=openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid)
 	if not kiosk:
@@ -304,6 +304,12 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpag
 	if (tabbed):
 		nb=Gtk.Notebook()
 		nb.new()
+		nb.set_show_tabs(False)
+		def setshowtabs(nb):
+			if (nb.get_n_pages()==1):
+				nb.set_show_tabs(False)
+			else:
+				nb.set_show_tabs(True)
 		def newtab(x):
 			#GLib.idle_add(lambda: nb.append_page(openWebPage2(page=page, traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb)))
 			box=openWebPage2(page=page, traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb)
@@ -311,15 +317,20 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpag
 			nb.show_all()
 			nb.set_current_page(-1)
 			tab=nb.get_nth_page(-1)
+			#nb.hide()
 			nb.set_tab_reorderable(tab,True)
+			setshowtabs(nb)
 			#nb.set_tab_label(tab,Gtk.Label(label=box.title))
 		nb.append_page(box)
+		if (vertabbed):
+			nb.set_tab_pos(Gtk.PositionType.LEFT)
 		window.add(nb)
 		b=Gtk.Button.new_from_icon_name("tab-new",Gtk.IconSize.MENU)
 		b.connect("clicked",newtab)
 		b2=Gtk.Button.new_from_icon_name("application-exit-symbolic",Gtk.IconSize.MENU)
 		def closetab(x):
 			nb.remove_page(nb.get_current_page())
+			setshowtabs(nb)
 		b2.connect("clicked",closetab)
 		hb=Gtk.HeaderBar()
 		hb.set_show_close_button(True)

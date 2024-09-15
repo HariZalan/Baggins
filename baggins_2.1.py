@@ -206,6 +206,11 @@ private=arglistr.private or False
 if (arglistr.none==True):
 	exit(0)
 traditional=arglistr.traditional or False
+vertabbed=traditional
+#if not traditional:
+#	vertabbed=True
+#else:
+#	vertabbed=False
 kiosk=arglistr.kiosk or False
-openWebPage(mainpage=fileurl+"mainpage_current.html",search_engine=sEngine,private=private,page=url,autoclosable=closable,title=title,kiosk=kiosk,traditional=traditional,aid=aid)
+openWebPage(mainpage=fileurl+"mainpage_current.html",search_engine=sEngine,private=private,page=url,autoclosable=closable,title=title,kiosk=kiosk,traditional=traditional,aid=aid,vertabbed=vertabbed)
 exit(0)
