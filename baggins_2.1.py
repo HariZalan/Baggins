@@ -19,7 +19,7 @@ except:
 	print ("Please, install GTK 3.")
 	exit(1)
 from gi.repository import Gtk
-path=os.path.dirname(os.path.abspath(__file__))
+path=os.path.realpath(os.path.dirname(os.path.realpath(__file__)))
 fileurl="file:///"+path+"/"
 bagpath=os.path.expanduser("~")+"/.baggins"
 if (not os.path.exists(bagpath)):

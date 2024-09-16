@@ -3,7 +3,7 @@ import os
 import urllib
 import time
 import random
-bilbospath=os.path.dirname(os.path.abspath(__file__))
+bilbospath=os.path.realpath(os.path.dirname(os.path.realpath(__file__)))
 bagpath=os.path.expanduser("~")+"/.baggins"
 import gi
 gi.require_version("Gtk","3.0")
@@ -27,6 +27,12 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		page=mainpage
 	try:
 		css=b"""
+		notebook {
+			transition: background 0.5s ease;
+		}
+		notebook.header {
+			border: none;
+		}
 		button, entry {
 			border-radius: 20px;
 			margin-right: 5px;
@@ -319,6 +325,7 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpag
 			tab=nb.get_nth_page(-1)
 			#nb.hide()
 			nb.set_tab_reorderable(tab,True)
+			nb.set_show_border(False)
 			setshowtabs(nb)
 			#nb.set_tab_label(tab,Gtk.Label(label=box.title))
 		nb.append_page(box)
