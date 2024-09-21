@@ -27,8 +27,12 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		page=mainpage
 	try:
 		css=b"""
+		/*@binding-set NewTab {
+			bind "<Control>T" { "newtab" };
+		}*/
 		notebook {
 			transition: background 0.5s ease;
+			/*-gtk-key-bindings: NewTab;*/
 		}
 		notebook.header {
 			border: none;
@@ -149,7 +153,7 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		def thread():
 			while webv.is_loading():
 				pass
-			webv.go_back()
+			webv.go_forward()
 		ourThread=threading.Thread(target=thread,daemon=True)
 		ourThread.start()
 	#window.set_icon_name("gnome-nettool")
@@ -215,7 +219,7 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		WebKit2.Settings.set_enable_caret_browsing(settings,True)
 		WebKit2.Settings.set_javascript_can_access_clipboard(settings,True)
 		def terminated(hight_reason):
-			webv.set_alternate_html("The web process has terminated unexpectedly.")
+			webv.load_alternate_html("The web process has terminated unexpectedly.")
 		def cameraandmicrophone(a,b):
 			if 1:
 				dialogue=Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,title="Permission request",flags=0,buttons=Gtk.ButtonsType.YES_NO)
@@ -234,7 +238,7 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		#print(type(pm))
 		#pm.notify()
 		webv.connect("permission-request", cameraandmicrophone)
-		webv.connect("web-process-terminated",terminated)
+		webv.connect("web-process-terminated",lambda x,y: terminated(x))
 		#if (private==True):
 		#	pass#WebKit2.Settings.set_enable_private_browsing(settings,True) deprecated
 	if (kiosk==False):
@@ -301,6 +305,10 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		urlthread=threading.Thread(target=ourthread,args=(None,webv,autoclosable,),daemon=True)
 	urlthread.start()
 	#box.set_parent(parent) if parent else False
+	box.webv=webv
+	box.goback=goback
+	box.goforward=goforward
+	box.reload=webv.reload
 	return box
 def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid=None,tabbed=False,vertabbed=True):
 	window=Gtk.Window()
@@ -318,7 +326,7 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpag
 				nb.set_show_tabs(True)
 		def newtab(x):
 			#GLib.idle_add(lambda: nb.append_page(openWebPage2(page=page, traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb)))
-			box=openWebPage2(page=page, traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb)
+			box=openWebPage2(page="about:home", traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb)
 			nb.append_page(box)
 			nb.show_all()
 			nb.set_current_page(-1)
@@ -335,9 +343,23 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpag
 		b=Gtk.Button.new_from_icon_name("tab-new",Gtk.IconSize.MENU)
 		b.connect("clicked",newtab)
 		b2=Gtk.Button.new_from_icon_name("application-exit-symbolic",Gtk.IconSize.MENU)
+		ag=Gtk.AccelGroup.new()
+		ag.connect(Gdk.keyval_from_name("t"),Gdk.ModifierType.CONTROL_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: newtab(1))
 		def closetab(x):
 			nb.remove_page(nb.get_current_page())
 			setshowtabs(nb)
+		def switchtab(forth):
+				if (forth=="forth"):
+					nb.next_page()
+				else:
+					nb.prev_page()
+		ag.connect(Gdk.keyval_from_name("w"),Gdk.ModifierType.CONTROL_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: closetab(1))
+		ag.connect(Gdk.keyval_from_name("b"),Gdk.ModifierType.CONTROL_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: switchtab("forth"))
+		ag.connect(Gdk.keyval_from_name("h"),Gdk.ModifierType.CONTROL_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: switchtab(False))
+		cpage=nb.get_nth_page(nb.get_current_page())
+		ag.connect(Gdk.keyval_from_name("F5"),Gdk.ModifierType.CONTROL_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: cpage.reload())
+		ag.connect(Gdk.keyval_from_name("Left"),Gdk.ModifierType.MOD1_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: cpage.goback(cpage.webv))
+		ag.connect(Gdk.keyval_from_name("Right"),Gdk.ModifierType.MOD1_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: cpage.goforward(cpage.webv))
 		b2.connect("clicked",closetab)
 		hb=Gtk.HeaderBar()
 		hb.set_show_close_button(True)
@@ -349,6 +371,7 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpag
 	window.set_default_size(1000,1000)
 	GLib.set_prgname(aid or "org.freedesktop.Baggins")
 	window.set_title(title or "Baggins 2.1 “Balin Fundin’s son”")
+	window.add_accel_group(ag)
 	window.show_all()
 	window.connect("destroy",Gtk.main_quit)
 	Gtk.main()
