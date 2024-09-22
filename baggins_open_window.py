@@ -219,7 +219,22 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		WebKit2.Settings.set_enable_caret_browsing(settings,True)
 		WebKit2.Settings.set_javascript_can_access_clipboard(settings,True)
 		def terminated(hight_reason):
-			webv.load_alternate_html("The web process has terminated unexpectedly.")
+			webv.load_alternate_html("""The web process has terminated unexpectedly<p><i>Clap! Snap! the black crack!
+Grip, grab! Pinch, nab!<br/>
+And down down to Goblin-town<br/>
+    You go, my lad!<br/><br/>
+
+Clash, crash! Crush, smash!<br/>
+Hammer and tongs! Knocker and gongs!<br/>
+Pound, pound, far underground!<br/>
+     Ho, ho! my lad!<br/><br/>
+
+Swish, smack! Whip crack!<br/>
+Batter and beat! Yammer and bleat!<br/>
+Work, work! Nor dare to shirk,<br/>
+While Goblins quaff, and Goblins laugh,<br/>
+Round and round far underground<br/>
+     Below, my lad</i><br/><br/> The Hobbit, J. R. R. Tolkien</p>""",webv.get_uri(),webv.get_uri())
 		def cameraandmicrophone(a,b):
 			if 1:
 				dialogue=Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,title="Permission request",flags=0,buttons=Gtk.ButtonsType.YES_NO)
