@@ -1,5 +1,3 @@
-WARNING: 2.1 is just beta yet.
-
 Baggins is a browser written using WebKitGTK.
 
 Installation instructions:
