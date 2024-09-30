@@ -8,6 +8,7 @@ import time
 import argparse
 import math
 import re
+import subprocess
 try:
 	import gi
 except:
@@ -77,6 +78,7 @@ argpersar.add_argument("-k","--kiosk",action="store_true")
 argpersar.add_argument("-0","--none",action="store_true")
 argpersar.add_argument("-c","--closable",action="store_true")
 argpersar.add_argument("-a","--createapplication",action="store_true")
+argpersar.add_argument("-b","--about",action="store_true")
 argpersar.add_argument("url",nargs="?")
 argpersar.add_argument("--title",nargs="?")
 argpersar.add_argument("--aid",nargs="?")
@@ -144,7 +146,7 @@ sEngineF=open(bagpath+"/searchengine")
 sEngine=sEngineF.read()
 sEngineF.close()
 if (arglistr.createapplication==True):
-	import baggins_create_application
+	subprocess.run(path+"/baggins_create_application.py")
 	exit(0)
 if (arglistr.update==True):
 	getgetconf()
@@ -200,7 +202,10 @@ if (arglistr.importdata==True):
 		storage.close()
 		exit(0)
 if (arglistr.setup==True):
-	import baggins_setup
+	subprocess.run(path+"/baggins_setup.py")
+	exit(0)
+if (arglistr.about):
+	subprocess.run(path+"/about.py")
 	exit(0)
 private=arglistr.private or False
 if (arglistr.none==True):
