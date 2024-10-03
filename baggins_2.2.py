@@ -15,9 +15,9 @@ except:
 	print ("Please, install GI.")
 	exit(1)
 try:
-	gi.require_version("Gtk","3.0")
+	gi.require_version("Gtk","4.0")
 except:
-	print ("Please, install GTK 3.")
+	print ("Please, install GTK 4.")
 	exit(1)
 from gi.repository import Gtk
 path=os.path.realpath(os.path.dirname(os.path.realpath(__file__)))
@@ -45,28 +45,28 @@ def wandupd(uri,file):
 		except Exception as Extion:
 			print ("I/O error, check the permissions, please.")
 			exit(1)
+#try:
+#	from bagheader import *
+#except Exception as e:
+#	if (not os.path.exists(path+"/bagheader.py")):
+#		wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/bagheader.py",path+"/bagheader.py")
+#		from bagheader import *
+#	else:
+#		print (e)
 try:
-	from bagheader import *
+	from baggins_open_window_gtk4 import *
 except Exception as e:
-	if (not os.path.exists(path+"/bagheader.py")):
-		wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/bagheader.py",path+"/bagheader.py")
-		from bagheader import *
-	else:
-		print (e)
-try:
-	from baggins_open_window import *
-except Exception as e:
-	if (not os.path.exists(path+"/baggins_open_window.py")):
-		wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_open_window.py",path+"/baggins_open_window.py")
-		from baggins_open_window import *
+	if (not os.path.exists(path+"/baggins_open_window_gtk4.py")):
+		wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_open_window_gtk4.py",path+"/baggins_open_window_gtk4.py")
+		from baggins_open_window_gtk4 import *
 	else:
 		print (e)
 #try:
-#	from baggins_open_window import *
+#	from baggins_open_window_gtk4 import *
 #except:
-#	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_open_window.py",path+"/baggins_open_window.py")
-#	from baggins_open_window import *
-from baggins_open_window import *
+#	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_open_window_gtk4.py",path+"/baggins_open_window_gtk4.py")
+#	from baggins_open_window_gtk4 import *
+from baggins_open_window_gtk4 import *
 argpersar=argparse.ArgumentParser()
 argpersar.add_argument("-t","--traditional",action="store_true")
 argpersar.add_argument("-p","--private",action="store_true")
@@ -87,22 +87,6 @@ arglistr=argpersar.parse_args()
 if (not os.path.exists(path+"/getget.conf.conf")):
 	wandupd(uri="https://raw.githubusercontent.com/HariZalan/Baggins/2.2/getget.conf.conf",file=path+"/getget.conf.conf")
 #support probe
-endofsupport=1788238799
-leftsecs=endofsupport-time.time()
-if (leftsecs > 0 and leftsecs<=864000):
-    text="The support of your version will end in "+str(leftsecs)+" seconds, which is equivalent by " + str(leftsecs/86400) + " days. Please, consider upgrading to a newer one."
-    print (text)
-    dialogdisplay(caption="Nearby end of support",text=text)
-if (time.time()>endofsupport): # September 1 2026, 04:59:59 GMT
-	text="Your current Baggins version is not supported, please, upgrade to a newer one. You can run Baggins with -u to do this."
-	print (text)
-	dialogdisplay(caption="The support ended",text=text)
-	if (time.time()>1797832799): # December 21 2025, 05:59:59 GMT
-		if (not os.path.exists("IWillUpgradeIPromise")):
-			text="(Y)our version is extremely old, create IWillUpgradeIPromise at /etc/baggins to run it."
-			print (text)
-			dialogdisplay(caption="Extremely eld version",text=text)
-			exit (1)
 #Function
 def getgetconf():
 	global localesc
