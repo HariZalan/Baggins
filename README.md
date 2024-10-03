@@ -1,4 +1,4 @@
-WARNING: 2.2 is not ready yet, also, it is currently a mix of GTK 3 and 4. Please, use 2.1 and be patient.
+WARNING: 2.2 is not ready yet, but it can be tested now. Please, open an issue for each problem that ye experience.
 
 Baggins is a browser written using WebKitGTK.
 
