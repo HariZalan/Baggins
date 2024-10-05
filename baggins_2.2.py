@@ -61,11 +61,6 @@ except Exception as e:
 		from baggins_open_window_gtk4 import *
 	else:
 		print (e)
-#try:
-#	from baggins_open_window_gtk4 import *
-#except:
-#	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_open_window_gtk4.py",path+"/baggins_open_window_gtk4.py")
-#	from baggins_open_window_gtk4 import *
 from baggins_open_window_gtk4 import *
 argpersar=argparse.ArgumentParser()
 argpersar.add_argument("-t","--traditional",action="store_true")
