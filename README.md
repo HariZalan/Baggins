@@ -1,4 +1,4 @@
-WARNING: 2.2 is not ready yet, but it can be tested now. Please, open an issue for each problem that ye experience.
+WARNING: 2.2 is now in its beta phase, but shortcuts are working queer, and therefore worse than 2.1 yet.
 
 Baggins is a browser written using WebKitGTK.
 
