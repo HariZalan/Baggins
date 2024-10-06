@@ -25,7 +25,6 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpag
 				else:
 					nb.set_show_tabs(True)
 			def newtab(x):
-				#GLib.idle_add(lambda: nb.append_page(openWebPage2(page=page, traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb)))
 				box=openWebPage2(page="about:home", traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb)
 				box.set_focusable(False)
 				nb.append_page(box)
@@ -47,22 +46,29 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpag
 			b.connect("clicked",newtab)
 			b2=Gtk.Button.new_from_icon_name("application-exit-symbolic")
 			cpage=nb.get_nth_page(nb.get_current_page())
-			shcont=Gtk.ShortcutController()
-			#shact=Gtk.ShortcutAction.activate()
-			shcont.add_shortcut(Gtk.Shortcut.new(trigger=Gtk.KeyvalTrigger.new(Gdk.keyval_from_name("t"),Gdk.ModifierType.CONTROL_MASK),action=Gtk.CallbackAction.new(lambda a,b: newtab(1))))
-			shcont.add_shortcut(Gtk.Shortcut.new(trigger=Gtk.KeyvalTrigger.new(Gdk.keyval_from_name("w"),Gdk.ModifierType.CONTROL_MASK),action=Gtk.CallbackAction.new(lambda a,b: closetab(1))))
-			shcont.add_shortcut(Gtk.Shortcut.new(trigger=Gtk.KeyvalTrigger.new(Gdk.keyval_from_name("b"),Gdk.ModifierType.CONTROL_MASK),action=Gtk.CallbackAction.new(lambda a,b: switchtab("forth"))))
-			shcont.add_shortcut(Gtk.Shortcut.new(trigger=Gtk.KeyvalTrigger.new(Gdk.keyval_from_name("h"),Gdk.ModifierType.CONTROL_MASK),action=Gtk.CallbackAction.new(lambda a,b: switchtab(False))))
-			shcont.add_shortcut(Gtk.Shortcut.new(trigger=Gtk.KeyvalTrigger.new(Gdk.keyval_from_name("F5"),Gdk.ModifierType.CONTROL_MASK),action=Gtk.CallbackAction.new(lambda a,b: cpage.reload())))
-			shcont.add_shortcut(Gtk.Shortcut.new(trigger=Gtk.KeyvalTrigger.new(Gdk.keyval_from_name("Left"),Gdk.ModifierType.CONTROL_MASK),action=Gtk.CallbackAction.new(lambda a,b: cpage.goback(cpage.webv))))
-			shcont.add_shortcut(Gtk.Shortcut.new(trigger=Gtk.KeyvalTrigger.new(Gdk.keyval_from_name("Right"),Gdk.ModifierType.CONTROL_MASK),action=Gtk.CallbackAction.new(lambda a,b: cpage.goforward(cpage.webv))))
-			
-			shcont.set_scope(Gtk.ShortcutScope.LOCAL)
-			#window.add_controller(shcont)
-			window.add_controller(shcont)
-			#window.set_focus_on_click(False)
-			#ag=Gtk.AccelGroup.new()
-			#ag.connect(Gdk.keyval_from_name("t"),Gdk.ModifierType.CONTROL_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: newtab(1))
+			def keypress(keyval,state,nb):
+				if state and Gdk.ModifierType.CONTROL_MASK:
+					if keyval==Gdk.KEY_t:
+						newtab(1)
+					elif keyval==Gdk.KEY_w:
+						closetab(1)
+					elif keyval==Gdk.KEY_b:
+						switchtab("forth")
+					elif keyval==Gdk.KEY_h:
+						switchtab(False)
+					elif keyval==Gdk.KEY_F5:
+						cpage.reload()
+				elif state and Gdk.ModifierType.ALT_MASK:
+					if keyval==Gdk.KEY_Left:
+						cpage.goback(cpage.webv)
+					elif keyval==Gdk.KEY_Right:
+						cpage.goforward(cpage.webv)
+				return False
+			ctrl=Gtk.EventControllerKey()
+			ctrl.connect("key-pressed",lambda controller, keyval, keycode, state: keypress(keyval, state, nb))
+			window.add_controller(ctrl)
+			ctrl2=Gtk.EventControllerKey()
+			ctrl2.connect("key-pressed",lambda controller, keyval, keycode, state: False)
 			def closetab(x):
 				nb.remove_page(nb.get_current_page())
 				setshowtabs(nb)
@@ -71,12 +77,6 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpag
 						nb.next_page()
 					else:
 						nb.prev_page()
-			#ag.connect(Gdk.keyval_from_name("w"),Gdk.ModifierType.CONTROL_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: closetab(1))
-			#ag.connect(Gdk.keyval_from_name("b"),Gdk.ModifierType.CONTROL_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: switchtab("forth"))
-			#ag.connect(Gdk.keyval_from_name("h"),Gdk.ModifierType.CONTROL_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: switchtab(False))
-			#ag.connect(Gdk.keyval_from_name("F5"),Gdk.ModifierType.CONTROL_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: cpage.reload())
-			#ag.connect(Gdk.keyval_from_name("Left"),Gdk.ModifierType.MOD1_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: cpage.goback(cpage.webv))
-			#ag.connect(Gdk.keyval_from_name("Right"),Gdk.ModifierType.MOD1_MASK,Gtk.AccelFlags.VISIBLE,lambda a,b,c,d: cpage.goforward(cpage.webv))
 			b2.connect("clicked",closetab)
 			hb=Gtk.HeaderBar()
 			#hb.set_show_close_button(True)
@@ -86,9 +86,7 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpag
 		else:
 			window.set_child(box)
 		window.set_default_size(1000,1000)
-#		GLib.set_prgname(aid or "org.freedesktop.Baggins")
-		window.set_title(title or "Baggins 2.1 “Thorin Oakshield”")
-#		window.add_accel_group(ag)
+		window.set_title(title or "Baggins 2.2 “Thorin Oakshield”")
 		window.present()
 	application=Gtk.Application(application_id=aid or "org.freedesktop.Baggins")
 	application.connect("activate",activate)
