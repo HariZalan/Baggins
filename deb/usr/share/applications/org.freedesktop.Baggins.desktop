@@ -1,0 +1,26 @@
+[Desktop Entry]
+Name=Baggins
+Comment=Minimalistic browser
+Exec=/usr/bin/baggins %U
+Terminal=false
+Type=Application
+Icon=web-browser
+StartupNotify=true
+Categories=Browser
+Actions=Private;Traditional;Setup;CreateApplication;
+
+[Desktop Action Private]
+Exec=/usr/bin/baggins -p
+Name=Open window without preserving cookies (private mode)
+
+[Desktop Action Traditional]
+Exec=/usr/bin/baggins -t
+Name=Traditional mode
+
+[Desktop Action Setup]
+Exec=/usr/bin/baggins -s
+Name=Setup
+
+[Desktop Action CreateApplication]
+Exec=/usr/bin/baggins -a
+Name=Create application

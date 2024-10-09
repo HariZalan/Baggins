@@ -1,0 +1,2 @@
+sudo rm /usr/bin/baggins || echo
+sudo ln -s /etc/baggins/baggins_2.2.py /usr/bin/baggins
