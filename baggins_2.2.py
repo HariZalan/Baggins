@@ -53,8 +53,8 @@ def wandupd(uri,file):
 #		from bagheader import *
 #	else:
 #		print (e)
-try:
-	from baggins_open_window_gtk4 import *
+#try:
+#	from baggins_open_window_gtk4 import *
 #except Exception as e:
 #	if (not os.path.exists(path+"/baggins_open_window_gtk4.py")):
 #		wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_open_window_gtk4.py",path+"/baggins_open_window_gtk4.py")
@@ -88,16 +88,16 @@ arglistr=argpersar.parse_args()
 #	ourFile=open(path+"/get.conf","w")
 #	try:
 #		thisContent=urllib.request.urlopen(open(path+"/getget.conf.conf").read()).read().decode()
-	except Exception as MyException:
-		print ("Something went wrong. If you think that it is a bug, contact me at either harizalan12@gmail.com or harizalan.programs@gmail.com. "+str(MyException))# print error message
-		ourFile.close()
-	else:
-		if (thisContent!=""):
-			ourFile.write(thisContent)
-			ourFile.close()
-			print ("Completed!")
-		else:
-			print ("")
+#	except Exception as MyException:
+#		print ("Something went wrong. If you think that it is a bug, contact me at either harizalan12@gmail.com or harizalan.programs@gmail.com. "+str(MyException))# print error message
+#		ourFile.close()
+#	else:
+#		if (thisContent!=""):
+#			ourFile.write(thisContent)
+#			ourFile.close()
+#			print ("Completed!")
+#		else:
+#			print ("")
 #get.conf probe
 #if (not os.path.exists(path+"/get.conf")):
 #	print ("get.conf does not exist, getting its content...") # print information message
