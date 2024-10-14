@@ -55,12 +55,12 @@ def wandupd(uri,file):
 #		print (e)
 try:
 	from baggins_open_window_gtk4 import *
-except Exception as e:
-	if (not os.path.exists(path+"/baggins_open_window_gtk4.py")):
-		wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_open_window_gtk4.py",path+"/baggins_open_window_gtk4.py")
-		from baggins_open_window_gtk4 import *
-	else:
-		print (e)
+#except Exception as e:
+#	if (not os.path.exists(path+"/baggins_open_window_gtk4.py")):
+#		wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_open_window_gtk4.py",path+"/baggins_open_window_gtk4.py")
+#		from baggins_open_window_gtk4 import *
+#	else:
+#		print (e)
 from baggins_open_window_gtk4 import *
 argpersar=argparse.ArgumentParser()
 argpersar.add_argument("-t","--traditional",action="store_true")
@@ -79,15 +79,15 @@ argpersar.add_argument("--title",nargs="?")
 argpersar.add_argument("--aid",nargs="?")
 arglistr=argpersar.parse_args()
 #getgetconfconf
-if (not os.path.exists(path+"/getget.conf.conf")):
-	wandupd(uri="https://raw.githubusercontent.com/HariZalan/Baggins/2.2/getget.conf.conf",file=path+"/getget.conf.conf")
+#if (not os.path.exists(path+"/getget.conf.conf")):
+#	wandupd(uri="https://raw.githubusercontent.com/HariZalan/Baggins/2.2/getget.conf.conf",file=path+"/getget.conf.conf")
 #support probe
 #Function
-def getgetconf():
-	global localesc
-	ourFile=open(path+"/get.conf","w")
-	try:
-		thisContent=urllib.request.urlopen(open(path+"/getget.conf.conf").read()).read().decode()
+#def getgetconf():
+#	global localesc
+#	ourFile=open(path+"/get.conf","w")
+#	try:
+#		thisContent=urllib.request.urlopen(open(path+"/getget.conf.conf").read()).read().decode()
 	except Exception as MyException:
 		print ("Something went wrong. If you think that it is a bug, contact me at either harizalan12@gmail.com or harizalan.programs@gmail.com. "+str(MyException))# print error message
 		ourFile.close()
@@ -99,28 +99,28 @@ def getgetconf():
 		else:
 			print ("")
 #get.conf probe
-if (not os.path.exists(path+"/get.conf")):
-	print ("get.conf does not exist, getting its content...") # print information message
-	getgetconf()
-getconfcontent=open(path+"/get.conf")
-getconfcontent2=getconfcontent.read()
-getconfcontent.close()
-getconfcontent=getconfcontent2
-getconfcontent=getconfcontent.split("\n")
+#if (not os.path.exists(path+"/get.conf")):
+#	print ("get.conf does not exist, getting its content...") # print information message
+#	getgetconf()
+#getconfcontent=open(path+"/get.conf")
+#getconfcontent2=getconfcontent.read()
+#getconfcontent.close()
+#getconfcontent=getconfcontent2
+#getconfcontent=getconfcontent.split("\n")
 #Check the existance of main page
-if (not os.path.exists(path+"/mainpage_current.html")):
-	wandupd(getconfcontent[2],path+"/mainpage_current.html")
+#if (not os.path.exists(path+"/mainpage_current.html")):
+#	wandupd(getconfcontent[2],path+"/mainpage_current.html")
 #Check the existance of Bilbo's picture.
-if (not os.path.exists(path+"/Bilbo.png")):
-	wandupd(getconfcontent[1],path+"/Bilbo.png")
-if (not os.path.exists(bagpath+"/searchengine")):
-	ourFileAgain=open(bagpath+"/searchengine","w")
-	ourFileAgain.write("https://duckduckgo.com/?q=")
-	ourFileAgain.close()
-if (not os.path.exists(path+"/baggins_setup.py")):
-	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_setup.py",path+"/baggins_setup.py")
-if (not os.path.exists(path+"/baggins_create_application.py")):
-	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_create_application.py",path+"/baggins_create_application.py")
+#if (not os.path.exists(path+"/Bilbo.png")):
+#	wandupd(getconfcontent[1],path+"/Bilbo.png")
+#if (not os.path.exists(bagpath+"/searchengine")):
+#	ourFileAgain=open(bagpath+"/searchengine","w")
+#	ourFileAgain.write("https://duckduckgo.com/?q=")
+#	ourFileAgain.close()
+#if (not os.path.exists(path+"/baggins_setup.py")):
+#	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_setup.py",path+"/baggins_setup.py")
+#if (not os.path.exists(path+"/baggins_create_application.py")):
+#	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_create_application.py",path+"/baggins_create_application.py")
 sEngineF=open(bagpath+"/searchengine")
 sEngine=sEngineF.read()
 sEngineF.close()
