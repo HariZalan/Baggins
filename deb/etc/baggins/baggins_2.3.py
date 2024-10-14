@@ -12,7 +12,7 @@ import subprocess
 try:
 	import gi
 except:
-	print ("Please, install PyGObject.")
+	print ("Please, install GI.")
 	exit(1)
 try:
 	gi.require_version("Gtk","4.0")

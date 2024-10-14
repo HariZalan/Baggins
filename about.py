@@ -16,7 +16,7 @@ def onactivate(application):
 	dialogue=Adw.AboutWindow()
 	dialogue.set_application(application)
 	dialogue.set_application_name("Baggins")
-	dialogue.set_version("2.2")
+	dialogue.set_version("2.3")
 	dialogue.set_developer_name("Zalán Hári")
 	dialogue.set_application_icon("web-browser")
 	dialogue.set_license_type(Gtk.License(Gtk.License.GPL_3_0))
