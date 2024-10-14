@@ -8,7 +8,7 @@ gi.require_version("WebKit","6.0")
 from gi.repository import Gtk, Gdk, Gio, GLib
 from gi.repository import WebKit as WebKit2
 from baggins_create_webview_et_al import *
-def openWebPage(page=None,traditional=False,name="Baggins",version="2.0",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid=None,tabbed=False,vertabbed=True):
+def openWebPage(page=None,traditional=False,name="Baggins",version="2.2",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid=None,tabbed=False,vertabbed=True):
 	def activate(application):
 		window=Gtk.ApplicationWindow()
 		window.set_application(application)
