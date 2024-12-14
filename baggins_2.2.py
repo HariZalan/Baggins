@@ -113,10 +113,10 @@ arglistr=argpersar.parse_args()
 #Check the existance of Bilbo's picture.
 #if (not os.path.exists(path+"/Bilbo.png")):
 #	wandupd(getconfcontent[1],path+"/Bilbo.png")
-#if (not os.path.exists(bagpath+"/searchengine")):
-#	ourFileAgain=open(bagpath+"/searchengine","w")
-#	ourFileAgain.write("https://duckduckgo.com/?q=")
-#	ourFileAgain.close()
+if (not os.path.exists(bagpath+"/searchengine")):
+	ourFileAgain=open(bagpath+"/searchengine","w")
+	ourFileAgain.write("https://duckduckgo.com/?q=")
+	ourFileAgain.close()
 #if (not os.path.exists(path+"/baggins_setup.py")):
 #	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_setup.py",path+"/baggins_setup.py")
 #if (not os.path.exists(path+"/baggins_create_application.py")):
