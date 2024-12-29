@@ -9,7 +9,7 @@ from gi.repository import Gtk, Gdk, Gio, GLib
 from gi.repository import WebKit as WebKit2
 from baggins_create_webview_et_al import *
 def openWebPage(page=None,traditional=False,name="Baggins",version="2.2",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid=None,tabbed=False,vertabbed=True):
-	def activate(application):
+	def activate(application,tabbed=False):
 		window=Gtk.ApplicationWindow()
 		window.set_application(application)
 		box=openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid)
