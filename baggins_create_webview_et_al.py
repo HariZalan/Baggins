@@ -17,7 +17,7 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.2",mainpag
 	def activate(application,tabbed=False):
 		window=Gtk.ApplicationWindow()
 		window.set_application(application)
-		box=openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid)
+		box=openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid,application=application)
 		if not kiosk:
 			tabbed=True
 		if (tabbed):
@@ -97,12 +97,12 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.2",mainpag
 		window.set_default_size(1000,1000)
 		window.set_title(title or "Baggins 2.2 “Thorin Oakshield”")
 		window.present()
-	application.connect("activate",activate)
+	application.connect("activate",lambda x: activate(application, tabbed))
 	if (applicationn==None):
 		application.run(None)
 			
 #from bagheader import dialogdisplay
-def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2.2",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins",parent=None):
+def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2.2",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins",parent=None,application=None):
 	if (aid==None):
 		aid="org.freedesktop.Baggins"
 	if (kiosk==True):
