@@ -9,6 +9,98 @@ gi.require_version("Gtk","4.0")
 gi.require_version("WebKit","6.0")
 from gi.repository import Gtk, Gdk, Gio, GLib
 from gi.repository import WebKit as WebKit2
+def openWebPage(page=None,traditional=False,name="Baggins",version="2.2",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid=None,tabbed=False,vertabbed=True,applicationn=None):
+	if (applicationn==None):
+		application=Gtk.Application(application_id=aid or "org.freedesktop.Baggins",flags=Gio.ApplicationFlags.ALLOW_REPLACEMENT)
+	else:
+		application=applicationn
+	def activate(application,tabbed=False):
+		window=Gtk.ApplicationWindow()
+		window.set_application(application)
+		box=openWebPage2(page=page,traditional=traditional,name=name,version=version,mainpage=mainpage,private=private,kiosk=kiosk,autoclosable=autoclosable,search_engine=search_engine,aid=aid)
+		if not kiosk:
+			tabbed=True
+		if (tabbed):
+			nb=Gtk.Notebook()
+			nb.new()
+			nb.set_show_tabs(False)
+			def setshowtabs(nb):
+				if (nb.get_n_pages()==1):
+					nb.set_show_tabs(False)
+				else:
+					nb.set_show_tabs(True)
+			def newtab(x):
+				box=openWebPage2(page="about:home", traditional=traditional, name=name, version=version, mainpage=mainpage, private=private, kiosk=kiosk, autoclosable=autoclosable, search_engine=search_engine, aid=aid,parent=nb)
+				box.set_focusable(False)
+				nb.append_page(box)
+				nb.show()
+				nb.set_current_page(-1)
+				tab=nb.get_nth_page(-1)
+				#nb.hide()
+				nb.set_tab_reorderable(tab,True)
+				nb.set_show_border(False)
+				setshowtabs(nb)
+				#nb.set_tab_label(tab,Gtk.Label(label=box.title))
+			nb.append_page(box)
+			if (vertabbed):
+				nb.set_tab_pos(Gtk.PositionType.LEFT)
+			window.set_child(nb)
+			window.set_focus(nb)
+			window.set_focus_on_click(False)
+			b=Gtk.Button.new_from_icon_name("tab-new")
+			b.connect("clicked",newtab)
+			b2=Gtk.Button.new_from_icon_name("application-exit-symbolic")
+			cpage=nb.get_nth_page(nb.get_current_page())
+			def webvkeypress(controller,keyval,keycode,state,ctrl):
+				ctrl.emit("key-pressed",keyval,keycode,state)
+				return False
+			def keypress(keyval,state,nb):
+				if state and Gdk.ModifierType.CONTROL_MASK:
+					if keyval==Gdk.KEY_t:
+						newtab(1)
+					elif keyval==Gdk.KEY_w:
+						closetab(1)
+					elif keyval==Gdk.KEY_b:
+						switchtab("forth")
+					elif keyval==Gdk.KEY_h:
+						switchtab(False)
+					elif keyval==Gdk.KEY_F5:
+						cpage.reload()
+				elif state and Gdk.ModifierType.ALT_MASK:
+					if keyval==Gdk.KEY_Left:
+						cpage.goback(cpage.webv)
+					elif keyval==Gdk.KEY_Right:
+						cpage.goforward(cpage.webv)
+				return False
+			ctrl=Gtk.EventControllerKey()
+			ctrl.connect("key-pressed",lambda controller, keyval, keycode, state: keypress(keyval, state, nb))
+			window.add_controller(ctrl)
+			ctrl2=Gtk.EventControllerKey()
+			cpage.webv.add_controller(ctrl2)
+			ctrl2.connect("key-pressed",lambda controller,keyval,keycode, state: webvkeypress(controller,keyval,keycode,state,ctrl))
+			def closetab(x):
+				nb.remove_page(nb.get_current_page())
+				setshowtabs(nb)
+			def switchtab(forth):
+					if (forth=="forth"):
+						nb.next_page()
+					else:
+						nb.prev_page()
+			b2.connect("clicked",closetab)
+			hb=Gtk.HeaderBar()
+			#hb.set_show_close_button(True)
+			hb.pack_start(b)
+			hb.pack_start(b2)
+			window.set_titlebar(hb)
+		else:
+			window.set_child(box)
+		window.set_default_size(1000,1000)
+		window.set_title(title or "Baggins 2.2 “Thorin Oakshield”")
+		window.present()
+	application.connect("activate",activate)
+	if (applicationn==None):
+		application.run(None)
+			
 #from bagheader import dialogdisplay
 def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2.2",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins",parent=None):
 	if (aid==None):
@@ -119,14 +211,6 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 				#else:
 				#	GLib.idle_add(reload.set_label,"⟳")
 				#	GLib.idle_add(reload.connect,"clicked",lambda x: webv.reload())
-	def openinnewwindow(wv,navact,kiosk,traditional,private,title):
-		x=navact.get_request().get_uri()
-		openWebPage(page=x,kiosk=kiosk,traditional=traditional,private=private,title=title)
-		return None
-	The_third_one=Gtk.Label()
-	#if (kiosk==True and spinner==True):
-	#	spinnerr=Gtk.Spinner()
-	#	spinnerr.set_visible(False)
 	def displayuri(attercop,hittestresult,oldtomnoddy,TheThirdOne,traditional):
 		if (hittestresult.context_is_link()==True):
 			TheThirdOne.set_visible(True)
@@ -196,7 +280,7 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		def downstart(session,download):
 			download.connect("decide-destination",decdest)
 		#WebKit2.WebContext.get_default().connect("download-started",downstart)
-		webv.connect("create",lambda x,y: openinnewwindow(x,y,kiosk,traditional,private,title))
+		webv.connect("create",lambda x,y: openinnewwindow(x,y,kiosk,traditional,private,title,application))
 		webv.connect("mouse-target-changed",lambda x,y,z: displayuri(x,y,z,The_third_one,traditional))
 		webv.connect("load-failed-with-tls-errors",loadfailed)
 		#WebKit2.Download().connect("decide-destination",downloadNotify)
@@ -320,3 +404,15 @@ Round and round far underground<br/>
 	box.goforward=goforward
 	box.reload=webv.reload
 	return box
+The_third_one=Gtk.Label()
+#if (kiosk==True and spinner==True):
+#	spinnerr=Gtk.Spinner()
+#	spinnerr.set_visible(False)
+def openinnewwindow(wv,navact,kiosk,traditional,private,title,application):
+	x=navact.get_request().get_uri()
+	openWebPage(page=x,kiosk=kiosk,traditional=traditional,private=private,title=title,applicationn=application)
+	return None
+The_third_one=Gtk.Label()
+#if (kiosk==True and spinner==True):
+#	spinnerr=Gtk.Spinner()
+#	spinnerr.set_visible(False)

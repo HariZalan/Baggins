@@ -61,7 +61,7 @@ def wandupd(uri,file):
 #		from baggins_open_window_gtk4 import *
 #	else:
 #		print (e)
-from baggins_open_window_gtk4 import *
+from baggins_create_webview_et_al import *
 argpersar=argparse.ArgumentParser()
 argpersar.add_argument("-t","--traditional",action="store_true")
 argpersar.add_argument("-p","--private",action="store_true")
