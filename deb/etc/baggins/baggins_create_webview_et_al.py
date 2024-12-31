@@ -218,8 +218,7 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 			TheThirdOne.set_text(WebKit2.uri_for_display(hittestresult.get_link_uri()))
 		else:
 			TheThirdOne.set_text("")
-			if (traditional==True):
-				TheThirdOne.set_visible(False)
+			#if (traditional==True):
 	def goback(webv):
 		def thread():
 			while webv.is_loading():
@@ -316,24 +315,34 @@ Work, work! Nor dare to shirk,<br/>
 While Goblins quaff, and Goblins laugh,<br/>
 Round and round far underground<br/>
      Below, my lad</i><br/><br/> The Hobbit, J. R. R. Tolkien</p>""",webv.get_uri(),webv.get_uri())
-		def cameraandmicrophone(a,b):
+		def cameraandmicrophone(application):
 			if 1:
-				dialogue=Gtk.MessageDialog(message_type=Gtk.MessageType.QUESTION,title="Permission request",flags=0,buttons=Gtk.ButtonsType.YES_NO)
-				lambeau=Gtk.Label(label="This site wants to request a permission.")
-				box=dialogue.get_content_area()
-				box.set_child(lambeau)
-				dialogue.show_all()
-				responsum=dialogue.run()
-				dialogue.destroy()
-				if (responsum==Gtk.ResponseType.YES):
-					b.allow()
-				else:
-					b.deny()
-				return False
+				window=Gtk.Window()
+				box=Gtk.Box()
+				window.set_child(box)
+				label=Gtk.Label.new("The site wants to request a permission.")
+				button1=Gtk.Button(label="Permit")
+				button2=Gtk.Button(label="Deny")
+				button1.connect("clicked", lambda x: permit())
+				button2.connect("clicked", lambda x: deny())
+				box.append(label)
+				box.append(button1)
+				box.append(button2)
+				window.set_application(application)
+				window.present()
+				result=False
+				def permit():
+					window.destroy()
+				def deny():
+					window.destroy()
+					nonlocal result
+					result=True
+					
+				return result
 		#pm=WebKit2.UserMediaPermissionRequest
 		#print(type(pm))
 		#pm.notify()
-		webv.connect("permission-request", cameraandmicrophone)
+		webv.connect("permission-request", lambda x,y: cameraandmicrophone(application))
 		webv.connect("web-process-terminated",lambda x,y: terminated(x))
 		#if (private==True):
 		#	pass#WebKit2.Settings.set_enable_private_browsing(settings,True) deprecated
@@ -374,14 +383,14 @@ Round and round far underground<br/>
 		if (kiosk==False):
 			box.prepend(box2)
 		box.prepend(The_third_one)
-		if (traditional==True):
-			The_third_one.set_visible(False)
+		#if (traditional==True):
+		#	The_third_one.set_visible(False)
 	else:
 		box.prepend(The_third_one)
 		if (kiosk==False):
 			box.append(box2)
-		if (traditional==True):
-			The_third_one.set_visible(False)
+		#if (traditional==True):
+		#	The_third_one.set_visible(False)
 		webvbox=Gtk.Box()
 		webvbox.prepend(webv)
 		box.prepend(webvbox)
