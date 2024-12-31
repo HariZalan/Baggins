@@ -97,10 +97,11 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.2",mainpag
 		window.set_default_size(1000,1000)
 		window.set_title(title or "Baggins 2.2 “Thorin Oakshield”")
 		window.present()
-	application.connect("activate",lambda x: activate(application, tabbed))
 	if (applicationn==None):
+		application.connect("activate",activate)
 		application.run(None)
-			
+	else:
+		activate(application, tabbed)
 #from bagheader import dialogdisplay
 def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2.2",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins",parent=None,application=None):
 	if (aid==None):

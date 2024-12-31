@@ -61,7 +61,7 @@ def wandupd(uri,file):
 #		from baggins_open_window_gtk4 import *
 #	else:
 #		print (e)
-from baggins_open_window_gtk4 import *
+from baggins_create_webview_et_al import *
 argpersar=argparse.ArgumentParser()
 argpersar.add_argument("-t","--traditional",action="store_true")
 argpersar.add_argument("-p","--private",action="store_true")
@@ -113,10 +113,10 @@ arglistr=argpersar.parse_args()
 #Check the existance of Bilbo's picture.
 #if (not os.path.exists(path+"/Bilbo.png")):
 #	wandupd(getconfcontent[1],path+"/Bilbo.png")
-#if (not os.path.exists(bagpath+"/searchengine")):
-#	ourFileAgain=open(bagpath+"/searchengine","w")
-#	ourFileAgain.write("https://duckduckgo.com/?q=")
-#	ourFileAgain.close()
+if (not os.path.exists(bagpath+"/searchengine")):
+	ourFileAgain=open(bagpath+"/searchengine","w")
+	ourFileAgain.write("https://duckduckgo.com/?q=")
+	ourFileAgain.close()
 #if (not os.path.exists(path+"/baggins_setup.py")):
 #	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_setup.py",path+"/baggins_setup.py")
 #if (not os.path.exists(path+"/baggins_create_application.py")):
