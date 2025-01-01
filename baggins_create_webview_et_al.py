@@ -278,10 +278,18 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		def decdest(download,theroad):
 			destination=theroad
 			download.set_destination(GLib.filename_to_uri(os.path.expanduser("~")+"/"+"Downloads/"+destination))
-			dialogdisplay("Download","Download started at ~/Downloads/"+destination)
+			dialogue=Gtk.Window()
+			label=Gtk.Label(label="A download has started.")
+			box=Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+			dialogue.set_child(box)
+			box.append(label)
+			ok=Gtk.Button(label="I have acknowledged")
+			ok.connect("clicked",lambda x: dialogue.destroy())
+			box.append(ok)
+			dialogue.present()
 		def downstart(session,download):
 			download.connect("decide-destination",decdest)
-		#WebKit2.WebContext.get_default().connect("download-started",downstart)
+		WebKit2.NetworkSession.get_default().connect("download-started",downstart)
 		webv.connect("create",lambda x,y: openinnewwindow(x,y,kiosk,traditional,private,title,application))
 		webv.connect("mouse-target-changed",lambda x,y,z: displayuri(x,y,z,The_third_one,traditional))
 		webv.connect("load-failed-with-tls-errors",loadfailed)
