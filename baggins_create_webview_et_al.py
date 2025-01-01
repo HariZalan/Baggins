@@ -105,7 +105,7 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.2",mainpag
 	else:
 		activate(application, tabbed)
 #from bagheader import dialogdisplay
-def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2.2",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins",parent=None,application=None):
+def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2.2",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid="org.freedesktop.Baggins",parent=None,application=None,webvkeypress=None):
 	if (aid==None):
 		aid="org.freedesktop.Baggins"
 	if (kiosk==True):
