@@ -9,6 +9,8 @@ gi.require_version("Gtk","4.0")
 gi.require_version("WebKit","6.0")
 from gi.repository import Gtk, Gdk, Gio, GLib
 from gi.repository import WebKit as WebKit2
+#import faulthandler
+#faulthandler.enable()
 def openWebPage(page=None,traditional=False,name="Baggins",version="2.2",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid=None,tabbed=False,vertabbed=True,applicationn=None):
 	if (applicationn==None):
 		application=Gtk.Application(application_id=aid or "org.freedesktop.Baggins",flags=Gio.ApplicationFlags.ALLOW_REPLACEMENT)
@@ -321,6 +323,7 @@ Round and round far underground<br/>
 				box=Gtk.Box()
 				window.set_child(box)
 				label=Gtk.Label.new("The site wants to request a permission.")
+				#The_third_one=Gtk.Label()
 				button1=Gtk.Button(label="Permit")
 				button2=Gtk.Button(label="Deny")
 				button1.connect("clicked", lambda x: permit())
@@ -378,6 +381,7 @@ Round and round far underground<br/>
 	#window.connect("key-press-event",keypressed)
 	#window.add_accelerator(button2,"<Control>d","clicked")
 	box=Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+	The_third_one=Gtk.Label()
 	if (traditional==True):
 		box.append(webv)
 		if (kiosk==False):
@@ -386,6 +390,9 @@ Round and round far underground<br/>
 		#if (traditional==True):
 		#	The_third_one.set_visible(False)
 	else:
+		#if The_third_one.get_parent():
+		#	print("ach")
+		#	The_third_one.get_parent().remove(The_third_one)
 		box.prepend(The_third_one)
 		if (kiosk==False):
 			box.append(box2)
@@ -414,7 +421,6 @@ Round and round far underground<br/>
 	box.goforward=goforward
 	box.reload=webv.reload
 	return box
-The_third_one=Gtk.Label()
 #if (kiosk==True and spinner==True):
 #	spinnerr=Gtk.Spinner()
 #	spinnerr.set_visible(False)
@@ -422,7 +428,6 @@ def openinnewwindow(wv,navact,kiosk,traditional,private,title,application):
 	x=navact.get_request().get_uri()
 	openWebPage(page=x,kiosk=kiosk,traditional=traditional,private=private,title=title,applicationn=application)
 	return None
-The_third_one=Gtk.Label()
 #if (kiosk==True and spinner==True):
 #	spinnerr=Gtk.Spinner()
 #	spinnerr.set_visible(False)
