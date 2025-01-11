@@ -286,6 +286,8 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		WebKit2.Settings.set_enable_back_forward_navigation_gestures(settings,True)
 		WebKit2.Settings.set_default_charset(settings,"utf-8")
 		WebKit2.Settings.set_javascript_can_access_clipboard(settings,True)
+		def aboutdialog():
+			import about
 		def terminated(hight_reason):
 			webv.load_alternate_html("""The web process has terminated unexpectedly<p><i>Clap! Snap! the black crack!
 Grip, grab! Pinch, nab!<br/>
@@ -346,6 +348,8 @@ Round and round far underground<br/>
 		button5.connect("clicked",lambda x: webv.reload())
 		button6=Gtk.Button.new_from_icon_name("folder-download-symbolic")
 		button6.connect("clicked",lambda x: webv.save_to_file(Gio.File.new_for_path(os.path.expanduser("~")+"/Downloads/"+str(random.randrange(10000))+".mhtml"),WebKit2.SaveMode(0),None,None,None))
+		button7=Gtk.Button.new_from_icon_name("help-about-symbolic")
+		button7.connect("clicked",lambda x: aboutdialog())
 		box2.append(button)
 		box2.append(button2)
 		box2.append(button5)
@@ -353,6 +357,7 @@ Round and round far underground<br/>
 		box2.append(button0)
 		box2.append(button4)
 		box2.append(button6)
+		box2.append(button7)
 	box=Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 	The_third_one=Gtk.Label()
 	if (traditional==True):

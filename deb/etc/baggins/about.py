@@ -5,9 +5,7 @@ gi.require_version("Adw","1")
 from gi.repository import Gtk, Adw, Gdk
 css_provider = Gtk.CssProvider()
 css_provider.load_from_data(b"""
-button {
-	margin: 15px;
-	border-radius: 15px;
+.about {
 	padding: 5px;
 }
 """)
