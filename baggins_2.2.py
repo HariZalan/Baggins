@@ -126,7 +126,7 @@ sEngine=sEngineF.read()
 sEngineF.close()
 if (arglistr.createapplication==True):
 	subprocess.run(path+"/baggins_create_application.py")
-	exit(0)
+	sys.exit(0)
 if (arglistr.update==True):
 	getgetconf()
 	getconfcontent=open(path+"/get.conf")
@@ -149,7 +149,7 @@ if (arglistr.update==True):
 			pyscriptfile.write(pyscriptcontent)
 			pyscriptfile.close()
 			print ("The update has been completed.")
-	exit(0)
+	sys.exit(0)
 url=arglistr.url
 closable=arglistr.closable
 title=arglistr.title
@@ -159,36 +159,36 @@ if (arglistr.export==True):
 	try:
 		input()
 	except KeyboardInterrupt:
-		exit(0)
+		sys.exit(0)
 	storage=open(bagpath+"/.baggins.storage")
 	storageContent=storage.read()
 	storage.close()
 	exportfile=open(os.path.expanduser("~")+"/baggins.exported","w")
 	exportfile.write(storageContent)
 	exportfile.close()
-	exit(0)
+	sys.exit(0)
 if (arglistr.importdata==True):
 		print ("Are you sure that you want to import your previous cookies? Your current ones will be removed. ^C to quit, enter to proceed.")
 		try:
 			input()
 		except KeyboardInterrupt:
-			exit(0)
+			sys.exit(0)
 		toimport=open(os.path.expanduser("~")+"/baggins.exported")
 		toimportc=toimport.read()
 		toimport.close()
 		storage=open(bagpath+"/.baggins.storage","w")
 		storage.write(toimportc)
 		storage.close()
-		exit(0)
+		sys.exit(0)
 if (arglistr.setup==True):
 	subprocess.run(path+"/baggins_setup.py")
-	exit(0)
+	sys.exit(0)
 if (arglistr.about):
 	subprocess.run(path+"/about.py")
-	exit(0)
+	sys.exit(0)
 private=arglistr.private or False
 if (arglistr.none==True):
-	exit(0)
+	sys.exit(0)
 traditional=arglistr.traditional or False
 vertabbed=traditional
 #if not traditional:
@@ -197,4 +197,4 @@ vertabbed=traditional
 #	vertabbed=False
 kiosk=arglistr.kiosk or False
 openWebPage(mainpage=fileurl+"mainpage_current.html",search_engine=sEngine,private=private,page=url,autoclosable=closable,title=title,kiosk=kiosk,traditional=traditional,aid=aid,vertabbed=vertabbed)
-exit(0)
+sys.exit(0)
