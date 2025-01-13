@@ -1,0 +1,20 @@
+		notebook {
+			transition: background 0.5s ease;
+			/*-gtk-key-bindings: NewTab;*/
+		}
+		notebook.header {
+			border: none;
+		}
+		button, entry {
+			border-radius: 20px;
+			margin-right: 5px;
+			margin-left: 5px;
+		}
+		
+		.titlebutton.close:hover {
+			background: red;
+			transition: background 0.3s ease;
+		}
+		.titlebutton.close {
+			transition: background 0.3s ease;
+		}
