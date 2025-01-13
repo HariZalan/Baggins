@@ -25,6 +25,9 @@ fileurl="file:///"+path+"/"
 bagpath=os.path.expanduser("~")+"/.baggins"
 if (not os.path.exists(bagpath)):
 	os.mkdir(bagpath)
+if (not os.path.exists(bagpath+"/ui.css")):
+	import shutil
+	shutil.copyfile(path+"/ui.css",bagpath+"/ui.css")
 if (platform.system()!="Linux"):
 	print ("Warning: Baggins has been designed for Linux, so it might malfunction on thy platform.")
 	if (platform.system()=="Windows"):

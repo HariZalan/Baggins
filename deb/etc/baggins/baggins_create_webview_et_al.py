@@ -108,33 +108,8 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 	if (page=="about:home" or page==None):
 		page=mainpage
 	try:
-		css=b"""
-		/*@binding-set NewTab {
-			bind "<Control>T" { "newtab" };
-		}*/
-		notebook {
-			transition: background 0.5s ease;
-			/*-gtk-key-bindings: NewTab;*/
-		}
-		notebook.header {
-			border: none;
-		}
-		button, entry {
-			border-radius: 20px;
-			margin-right: 5px;
-			margin-left: 5px;
-		}
-		
-		.titlebutton.close:hover {
-			background: red;
-			transition: background 0.3s ease;
-		}
-		.titlebutton.close {
-			transition: background 0.3s ease;
-		}
-		"""
 		provider=Gtk.CssProvider()
-		provider.load_from_file(Gio.File.new_for_path(bilbospath+"/ui.css"))
+		provider.load_from_file(Gio.File.new_for_path(bagpath+"/ui.css"))
 		Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(),provider,Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 	except Exception as e:
 		print ("Failed to load CSS, the browser will work, but the GUI shall be poor. The exception:")
