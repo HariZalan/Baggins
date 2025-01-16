@@ -246,6 +246,7 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		def downstart(session,download):
 			download.connect("decide-destination",decdest)
 		WebKit2.NetworkSession.get_default().connect("download-started",downstart)
+		WebKit2.NetworkSession.get_default().set_itp_enabled(True)
 		webv.connect("create",lambda x,y: openinnewwindow(x,y,kiosk,traditional,private,title,application))
 		webv.connect("mouse-target-changed",lambda x,y,z: displayuri(x,y,z,The_third_one,traditional))
 		webv.connect("load-failed-with-tls-errors",loadfailed)
@@ -280,7 +281,7 @@ Work, work! Nor dare to shirk,<br/>
 While Goblins quaff, and Goblins laugh,<br/>
 Round and round far underground<br/>
      Below, my lad</i><br/><br/> The Hobbit, J. R. R. Tolkien</p>""",webv.get_uri(),webv.get_uri())
-		def cameraandmicrophone(application):
+		def cameraandmicrophone(application,b):
 			if 1:
 				window=Gtk.Window()
 				box=Gtk.Box()
@@ -298,13 +299,15 @@ Round and round far underground<br/>
 				result=False
 				def permit():
 					window.destroy()
+					b.allow()
 				def deny():
 					window.destroy()
 					nonlocal result
 					result=True
+					b.deny()
 					
 				return result
-		webv.connect("permission-request", lambda x,y: cameraandmicrophone(application))
+		webv.connect("permission-request", lambda x,y: cameraandmicrophone(application,y))
 		webv.connect("web-process-terminated",lambda x,y: terminated(x))
 	if (kiosk==False):
 		box2=Gtk.Box()
