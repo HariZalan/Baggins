@@ -328,6 +328,7 @@ Round and round far underground<br/>
 		button6.connect("clicked",lambda x: webv.save_to_file(Gio.File.new_for_path(os.path.expanduser("~")+"/Downloads/"+str(random.randrange(10000))+".mhtml"),WebKit2.SaveMode(0),None,None,None))
 		button7=Gtk.Button.new_from_icon_name("help-about-symbolic")
 		button7.connect("clicked",lambda x: aboutdialog())
+		#button7=Gtk.Button.new_from_icon_name("application-x-addon-symbolic")
 		box2.append(button)
 		box2.append(button2)
 		box2.append(button5)
