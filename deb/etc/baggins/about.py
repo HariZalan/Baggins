@@ -5,10 +5,10 @@ gi.require_version("Adw","1")
 from gi.repository import Gtk, Adw, Gdk
 css_provider = Gtk.CssProvider()
 css_provider.load_from_data(b"""
-button {
-	margin: 15px;
-	border-radius: 15px;
+.about {
 	padding: 5px;
+	min-height: 400px;
+	border-radius: 20px;
 }
 """)
 Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
@@ -22,6 +22,7 @@ def onactivate(application):
 	dialogue.set_license_type(Gtk.License(Gtk.License.GPL_3_0))
 	dialogue.set_website("https://github.com/HariZalan/Baggins")
 	dialogue.set_issue_url("https://github.com/HariZalan/Baggins/issues")
+	dialogue.set_valign(Gtk.Align.FILL)
 	dialogue.set_visible(True)
 application=Gtk.Application()
 application.connect("activate",onactivate)

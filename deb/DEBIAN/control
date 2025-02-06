@@ -1,6 +1,6 @@
 Package: baggins
-Version: 2.2-2
+Version: 2.3-alpha
 Architecture: all
 Depends: python3, python3-gi, gir1.2-webkit-6.0, gir1.2-gtk-4.0, gir1.2-adw-1
-Maintainer: Zalán Hári <harizalan12@gmail.com>
+Maintainer: Zalán Hári <harizalan@harizalan.hu>
 Description: A minimalistic browser written using GTK and WebKit

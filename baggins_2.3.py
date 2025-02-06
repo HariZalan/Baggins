@@ -12,7 +12,7 @@ import subprocess
 try:
 	import gi
 except:
-	print ("Please, install PyGObject.")
+	print ("Please, install GI.")
 	exit(1)
 try:
 	gi.require_version("Gtk","4.0")
@@ -25,6 +25,9 @@ fileurl="file:///"+path+"/"
 bagpath=os.path.expanduser("~")+"/.baggins"
 if (not os.path.exists(bagpath)):
 	os.mkdir(bagpath)
+if (not os.path.exists(bagpath+"/ui.css")):
+	import shutil
+	shutil.copyfile(path+"/ui.css",bagpath+"/ui.css")
 if (platform.system()!="Linux"):
 	print ("Warning: Baggins has been designed for Linux, so it might malfunction on thy platform.")
 	if (platform.system()=="Windows"):
@@ -53,15 +56,15 @@ def wandupd(uri,file):
 #		from bagheader import *
 #	else:
 #		print (e)
-try:
-	from baggins_open_window_gtk4 import *
+#try:
+#	from baggins_open_window_gtk4 import *
 #except Exception as e:
 #	if (not os.path.exists(path+"/baggins_open_window_gtk4.py")):
 #		wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_open_window_gtk4.py",path+"/baggins_open_window_gtk4.py")
 #		from baggins_open_window_gtk4 import *
 #	else:
 #		print (e)
-from baggins_open_window_gtk4 import *
+from baggins_create_webview_et_al import *
 argpersar=argparse.ArgumentParser()
 argpersar.add_argument("-t","--traditional",action="store_true")
 argpersar.add_argument("-p","--private",action="store_true")
@@ -88,16 +91,16 @@ arglistr=argpersar.parse_args()
 #	ourFile=open(path+"/get.conf","w")
 #	try:
 #		thisContent=urllib.request.urlopen(open(path+"/getget.conf.conf").read()).read().decode()
-	except Exception as MyException:
-		print ("Something went wrong. If you think that it is a bug, contact me at either harizalan12@gmail.com or harizalan.programs@gmail.com. "+str(MyException))# print error message
-		ourFile.close()
-	else:
-		if (thisContent!=""):
-			ourFile.write(thisContent)
-			ourFile.close()
-			print ("Completed!")
-		else:
-			print ("")
+#	except Exception as MyException:
+#		print ("Something went wrong. If you think that it is a bug, contact me at either harizalan12@gmail.com or harizalan.programs@gmail.com. "+str(MyException))# print error message
+#		ourFile.close()
+#	else:
+#		if (thisContent!=""):
+#			ourFile.write(thisContent)
+#			ourFile.close()
+#			print ("Completed!")
+#		else:
+#			print ("")
 #get.conf probe
 #if (not os.path.exists(path+"/get.conf")):
 #	print ("get.conf does not exist, getting its content...") # print information message
@@ -113,10 +116,10 @@ arglistr=argpersar.parse_args()
 #Check the existance of Bilbo's picture.
 #if (not os.path.exists(path+"/Bilbo.png")):
 #	wandupd(getconfcontent[1],path+"/Bilbo.png")
-#if (not os.path.exists(bagpath+"/searchengine")):
-#	ourFileAgain=open(bagpath+"/searchengine","w")
-#	ourFileAgain.write("https://duckduckgo.com/?q=")
-#	ourFileAgain.close()
+if (not os.path.exists(bagpath+"/searchengine")):
+	ourFileAgain=open(bagpath+"/searchengine","w")
+	ourFileAgain.write("https://duckduckgo.com/?q=")
+	ourFileAgain.close()
 #if (not os.path.exists(path+"/baggins_setup.py")):
 #	wandupd("https://raw.githubusercontent.com/HariZalan/Baggins/2.2/baggins_setup.py",path+"/baggins_setup.py")
 #if (not os.path.exists(path+"/baggins_create_application.py")):
@@ -126,7 +129,7 @@ sEngine=sEngineF.read()
 sEngineF.close()
 if (arglistr.createapplication==True):
 	subprocess.run(path+"/baggins_create_application.py")
-	exit(0)
+	sys.exit(0)
 if (arglistr.update==True):
 	getgetconf()
 	getconfcontent=open(path+"/get.conf")
@@ -149,7 +152,7 @@ if (arglistr.update==True):
 			pyscriptfile.write(pyscriptcontent)
 			pyscriptfile.close()
 			print ("The update has been completed.")
-	exit(0)
+	sys.exit(0)
 url=arglistr.url
 closable=arglistr.closable
 title=arglistr.title
@@ -159,36 +162,36 @@ if (arglistr.export==True):
 	try:
 		input()
 	except KeyboardInterrupt:
-		exit(0)
+		sys.exit(0)
 	storage=open(bagpath+"/.baggins.storage")
 	storageContent=storage.read()
 	storage.close()
 	exportfile=open(os.path.expanduser("~")+"/baggins.exported","w")
 	exportfile.write(storageContent)
 	exportfile.close()
-	exit(0)
+	sys.exit(0)
 if (arglistr.importdata==True):
 		print ("Are you sure that you want to import your previous cookies? Your current ones will be removed. ^C to quit, enter to proceed.")
 		try:
 			input()
 		except KeyboardInterrupt:
-			exit(0)
+			sys.exit(0)
 		toimport=open(os.path.expanduser("~")+"/baggins.exported")
 		toimportc=toimport.read()
 		toimport.close()
 		storage=open(bagpath+"/.baggins.storage","w")
 		storage.write(toimportc)
 		storage.close()
-		exit(0)
+		sys.exit(0)
 if (arglistr.setup==True):
 	subprocess.run(path+"/baggins_setup.py")
-	exit(0)
+	sys.exit(0)
 if (arglistr.about):
 	subprocess.run(path+"/about.py")
-	exit(0)
+	sys.exit(0)
 private=arglistr.private or False
 if (arglistr.none==True):
-	exit(0)
+	sys.exit(0)
 traditional=arglistr.traditional or False
 vertabbed=traditional
 #if not traditional:
@@ -197,4 +200,4 @@ vertabbed=traditional
 #	vertabbed=False
 kiosk=arglistr.kiosk or False
 openWebPage(mainpage=fileurl+"mainpage_current.html",search_engine=sEngine,private=private,page=url,autoclosable=closable,title=title,kiosk=kiosk,traditional=traditional,aid=aid,vertabbed=vertabbed)
-exit(0)
+sys.exit(0)
