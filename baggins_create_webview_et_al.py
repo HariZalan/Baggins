@@ -134,46 +134,6 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 			entry.set_text(webv.get_uri())
 		def searchuri(entry,webv):
 			webv.load_uri(search_engine+entry.get_text())
-	def ourthread(entry=None,webv=WebKit2.WebView(),autoclosable=False,back=None,forward=None,reload=None,box=None):
-		if (entry==None):
-			while True:
-				if (webv.get_uri().endswith("#baggins-browser-close-requested") and autoclosable==True):
-					Gtk.main_quit()
-		else:
-			url=webv.get_uri()
-			if (url!=mainpage): # Do not show URL at mainpage
-				GLib.idle_add(lambda: entry.set_text(url))
-			else:
-				GLib.idle_add(lambda: entry.set_text("about:home"))
-			while True:
-				time.sleep(0.1)
-				if (back!=None and forward!=None):
-					if (webv.can_go_back()):
-						GLib.idle_add(lambda: back.set_sensitive(True))
-					else:
-						GLib.idle_add(lambda: back.set_sensitive(False))
-					if (webv.can_go_forward()):
-						GLib.idle_add(lambda: forward.set_sensitive(True))
-					else:
-						GLib.idle_add(lambda: forward.set_sensitive(False))
-				if (webv.get_uri().endswith("#baggins-browser-close-requested") and autoclosable==True):
-					Gtk.main_quit()
-				if (url!=webv.get_uri()):
-					if (webv.get_uri()!=mainpage): # Do not show URL at mainpage
-						url=webv.get_uri()
-						if (autoclosable==True and url.endswith("#baggins-browser-close-requested")):
-							Gtk.main_quit()
-						try:
-							GLib.idle_add(lambda: entry.set_text(WebKit2.uri_for_display(url)))
-						except:
-							pass
-					else:
-						url=webv.get_uri()
-						GLib.idle_add(lambda: entry.set_text("about:home"))
-				if (webv.is_loading() and reload!=None):
-					GLib.idle_add(lambda: reload.set_sensitive(False))
-				else:
-					GLib.idle_add(lambda: reload.set_sensitive(True))
 	def displayuri(attercop,hittestresult,oldtomnoddy,TheThirdOne,traditional):
 		if (hittestresult.context_is_link()==True):
 			TheThirdOne.set_visible(True)
@@ -185,15 +145,11 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 			while webv.is_loading():
 				pass
 			webv.go_back()
-		ourThread=threading.Thread(target=thread,daemon=True)
-		ourThread.start()
 	def goforward(webv):
 		def thread():
 			while webv.is_loading():
 				pass
 			webv.go_forward()
-		ourThread=threading.Thread(target=thread,daemon=True)
-		ourThread.start()
 	icon=bilbospath+"/Bilbo.png"
 	if (webv==None):
 		def loadfailed(webv,uri,cert,err):
@@ -309,6 +265,10 @@ Round and round far underground<br/>
 				return result
 		webv.connect("permission-request", lambda x,y: cameraandmicrophone(application,y))
 		webv.connect("web-process-terminated",lambda x,y: terminated(x))
+	def urichanged(entry,webv):
+		entry.set_text(webv.get_uri())
+		if (webv.get_uri().endswith("#baggins-browser-close-requested")):
+			exit(0)
 	if (kiosk==False):
 		box2=Gtk.Box()
 		entrie=Gtk.Entry()
@@ -328,6 +288,7 @@ Round and round far underground<br/>
 		button6.connect("clicked",lambda x: webv.save_to_file(Gio.File.new_for_path(os.path.expanduser("~")+"/Downloads/"+str(random.randrange(10000))+".mhtml"),WebKit2.SaveMode(0),None,None,None))
 		button7=Gtk.Button.new_from_icon_name("help-about-symbolic")
 		button7.connect("clicked",lambda x: aboutdialog())
+		webv.connect("load-changed",lambda x,y: urichanged(entrie,webv))
 		#button7=Gtk.Button.new_from_icon_name("application-x-addon-symbolic")
 		box2.append(button)
 		box2.append(button2)
@@ -354,10 +315,10 @@ Round and round far underground<br/>
 	if(box!=None):
 		box.title=webv.get_title()
 	if (kiosk==False):
-		urlthread=threading.Thread(target=ourthread,args=(entrie,webv,autoclosable,button,button2,button5,box,),daemon=True)
+		pass#urlthread=threading.Thread(target=ourthread,args=(entrie,webv,autoclosable,button,button2,button5,box,),daemon=True)
 	else:
-		urlthread=threading.Thread(target=ourthread,args=(None,webv,autoclosable,),daemon=True)
-	urlthread.start()
+		pass#urlthread=threading.Thread(target=ourthread,args=(None,webv,autoclosable,),daemon=True)
+	#urlthread.start()
 	webv.set_focusable(False)
 	box.webv=webv
 	box.goback=goback
