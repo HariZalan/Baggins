@@ -131,7 +131,8 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 			else:
 				webv.load_uri(mainpage)
 		def geturi(entry,webv):
-			entry.set_text(webv.get_uri())
+			txt=webv.get_uri()
+			entry.set_text(txt)
 		def searchuri(entry,webv):
 			webv.load_uri(search_engine+entry.get_text())
 	def displayuri(attercop,hittestresult,oldtomnoddy,TheThirdOne,traditional):
@@ -266,9 +267,12 @@ Round and round far underground<br/>
 		webv.connect("permission-request", lambda x,y: cameraandmicrophone(application,y))
 		webv.connect("web-process-terminated",lambda x,y: terminated(x))
 	def urichanged(entry,webv):
-		entry.set_text(webv.get_uri())
-		if (webv.get_uri().endswith("#baggins-browser-close-requested")):
+		txt=webv.get_uri()
+		if (txt.endswith("#baggins-browser-close-requested")):
 			exit(0)
+		if (txt==mainpage):
+			txt=""
+		entry.set_text(txt)
 	if (kiosk==False):
 		box2=Gtk.Box()
 		entrie=Gtk.Entry()
