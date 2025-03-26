@@ -23,3 +23,10 @@ In order to make it work under Ubuntu 24.04 and its derivatives, the following p
 ```bash
 sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 ```
+
+Tested platforms:
+
+* Debian 12 „Bookworm”
+* Ubuntu 22.04
+* Ubuntu 24.04
+* Lubuntu 24.04 (impractical, the browser itself is lightweight, but it needs 130 MB of packages)
