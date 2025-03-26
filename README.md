@@ -17,3 +17,9 @@ ln -s ~/Baggins/baggins_2.3.py ~/.local/bin/baggins
 Then install WebKit 6, GTK 4, Python 3 and the Python GI. (For that, you must have root access, methinks, PyGObject you can install using pip, but for GTK and WebKit this does not work.)
 
 If ye use a Debian-based distribution, it is possible to get the DEB from https://raw.githubusercontent.com/HariZalan/Baggins/2.3/baggins_2.3.deb.
+
+In order to make it work under Ubuntu 24.04 and its derivatives, the following patch is required:
+
+```bash
+sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+```
