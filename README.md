@@ -30,3 +30,13 @@ Tested platforms:
 * Ubuntu 22.04
 * Ubuntu 24.04
 * Lubuntu 24.04 (impractical, the browser itself is lightweight, but it needs 130 MB of packages)
+
+
+Currently, I maintain the project fairly actively, however, it does not have many planned changes, these few are:
+
+* Display page titles instead of „Page 1”, „Page 2”, „Page ...”
+* Create an AppImage
+* Make permission requests more practical
+* Possibility to remove link bar in web applications
+
+The first is the most important one.
