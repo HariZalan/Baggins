@@ -267,13 +267,14 @@ Round and round far underground<br/>
 		webv.connect("permission-request", lambda x,y: cameraandmicrophone(application,y))
 		webv.connect("web-process-terminated",lambda x,y: terminated(x))
 	def urichanged(entry,webv):
-		txt=webv.get_uri()
-		title=webv.get_title()
-		nb=webv.get_parent()
-		nb=nb.get_parent()
-		nb=nb.get_parent()
-		nb=nb.get_parent()
-		nb.set_tab_label(nb.get_nth_page(nb.get_current_page()),Gtk.Label(label=title))
+		if not kiosk:
+			txt=webv.get_uri()
+			title=webv.get_title()
+			nb=webv.get_parent()
+			nb=nb.get_parent()
+			nb=nb.get_parent()
+			nb=nb.get_parent()
+			nb.set_tab_label(nb.get_nth_page(nb.get_current_page()),Gtk.Label(label=title))
 		if (txt.endswith("#baggins-browser-close-requested")):
 			exit(0)
 		if (txt==mainpage):

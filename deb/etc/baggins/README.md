@@ -4,14 +4,14 @@ Installation instructions:
 Use
 ```bash
   cd ~
-  git clone https://github.com/HariZalan/Baggins -b 2.3
-  sudo ln -s ~/Baggins/baggins_2.3.py /usr/bin/baggins
+  git clone https://github.com/HariZalan/Baggins -b 2.4
+  sudo ln -s ~/Baggins/baggins_2.4.py /usr/bin/baggins
 ```
 Or, if you do not have root access:
 ```bash
 cd ~
-git clone https://github.com/HariZalan/Baggins -b 2.3
-ln -s ~/Baggins/baggins_2.3.py ~/.local/bin/baggins
+git clone https://github.com/HariZalan/Baggins -b 2.4
+ln -s ~/Baggins/baggins_2.4.py ~/.local/bin/baggins
 ```
 
 Then install WebKit 6, GTK 4, Python 3 and the Python GI. (For that, you must have root access, methinks, PyGObject you can install using pip, but for GTK and WebKit this does not work.)
@@ -40,7 +40,7 @@ Tested platforms:
 
 Currently, I maintain the project fairly actively, however, it does not have many planned changes, these few are:
 
-* Display page titles instead of „Page 1”, „Page 2”, „Page ...”
+* Display page titles instead of „Page 1”, „Page 2”, „Page ...” (completed)
 * Create an AppImage
 * Make permission requests more practical
 * Possibility to remove link bar in web applications
