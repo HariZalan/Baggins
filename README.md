@@ -18,10 +18,16 @@ Then install WebKit 6, GTK 4, Python 3 and the Python GI. (For that, you must ha
 
 If ye use a Debian-based distribution, it is possible to get the DEB from https://raw.githubusercontent.com/HariZalan/Baggins/2.3/baggins_2.3.deb.
 
-In order to make it work under Ubuntu 24.04 and its derivatives, the following patch is required:
+In order to make it work under Ubuntu 24.04 and its derivatives, the following patch is required at each boot:
 
 ```bash
 sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+```
+
+Or, for a permanent solution:
+
+```bash
+echo 'kernel.apparmor_restrict_unprivileged_userns = 0' | sudo tee /etc/sysctl.d/20-apparmor-donotrestrict.conf
 ```
 
 Tested platforms:
