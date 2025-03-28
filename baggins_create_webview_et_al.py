@@ -9,7 +9,7 @@ gi.require_version("Gtk","4.0")
 gi.require_version("WebKit","6.0")
 from gi.repository import Gtk, Gdk, Gio, GLib
 from gi.repository import WebKit as WebKit2
-def openWebPage(page=None,traditional=False,name="Baggins",version="2.3",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid=None,tabbed=False,vertabbed=True,applicationn=None):
+def openWebPage(page=None,traditional=False,name="Baggins",version="2.4",mainpage=None,private=False,kiosk=False,title=None,autoclosable=False,boxonly=False,search_engine="https://duckduckgo.com/?q=",aid=None,tabbed=False,vertabbed=True,applicationn=None):
 	if (applicationn==None):
 		application=Gtk.Application(application_id=aid or "org.freedesktop.Baggins",flags=Gio.ApplicationFlags.ALLOW_REPLACEMENT)
 	else:
@@ -92,7 +92,7 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.3",mainpag
 		else:
 			window.set_child(box)
 		window.set_default_size(1000,1000)
-		window.set_title(title or "Baggins 2.3 “Dori”")
+		window.set_title(title or "Baggins 2.4 “Nori”")
 		window.present()
 	if (applicationn==None):
 		application.connect("activate",activate)
