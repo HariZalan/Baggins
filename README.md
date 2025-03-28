@@ -40,7 +40,7 @@ Tested platforms:
 
 Currently, I maintain the project fairly actively, however, it does not have many planned changes, these few are:
 
-* Display page titles instead of „Page 1”, „Page 2”, „Page ...”
+* Display page titles instead of „Page 1”, „Page 2”, „Page ...” (completed)
 * Create an AppImage
 * Make permission requests more practical
 * Possibility to remove link bar in web applications
