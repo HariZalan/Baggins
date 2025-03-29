@@ -241,6 +241,14 @@ Round and round far underground<br/>
 		def cameraandmicrophone(application,b):
 			if 1:
 				window=Gtk.Window()
+				def permit():
+					window.destroy()
+					b.allow()
+				def deny():
+					window.destroy()
+					nonlocal result
+					result=True
+					b.deny()
 				box=Gtk.Box()
 				window.set_child(box)
 				label=Gtk.Label.new("The site wants to request a permission.")
@@ -253,16 +261,7 @@ Round and round far underground<br/>
 				box.append(button2)
 				window.set_application(application)
 				window.present()
-				result=False
-				def permit():
-					window.destroy()
-					b.allow()
-				def deny():
-					window.destroy()
-					nonlocal result
-					result=True
-					b.deny()
-					
+				result=True
 				return result
 		webv.connect("permission-request", lambda x,y: cameraandmicrophone(application,y))
 		webv.connect("web-process-terminated",lambda x,y: terminated(x))
@@ -315,11 +314,10 @@ Round and round far underground<br/>
 		box.append(webv)
 		if (kiosk==False):
 			box.prepend(box2)
-		box.prepend(The_third_one)
+			box.prepend(The_third_one)
 	else:
 		box.prepend(The_third_one)
-		if (kiosk==False):
-			box.append(box2)
+		box.append(box2)
 		webvbox=Gtk.Box()
 		webvbox.prepend(webv)
 		box.prepend(webvbox)
