@@ -9,6 +9,9 @@ csv=f.read()
 csv=csv.split("\n")
 for i in range(len(csv)):
 	csv[i]=csv[i].split("	")
-appname=csv[1][1]
-uri=csv[2][1]
-createApplication(uri,appname,"")
+try:
+	appname=csv[1][1]
+	uri=csv[2][1]
+	createApplication(uri,appname,"")
+except:
+	print("Error")
