@@ -91,7 +91,9 @@ def openWebPage(page=None,traditional=False,name="Baggins",version="2.3",mainpag
 			window.set_titlebar(hb)
 		else:
 			window.set_child(box)
-		window.set_default_size(1000,1000)
+		monitors=Gdk.Display.get_monitors(Gdk.Display.get_default())
+		geom=Gdk.Monitor.get_geometry(monitors[0])
+		window.set_default_size(geom.width,geom.height)
 		window.set_title(title or "Baggins 2.3 “Dori”")
 		window.present()
 	if (applicationn==None):
@@ -185,7 +187,6 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 				""",uri,uri)
 			return True
 		webv=WebKit2.WebView()
-		webv.set_size_request(1000,900)
 		webv.set_hexpand(True)
 		webv.set_vexpand(True)
 		def decdest(download,theroad):
