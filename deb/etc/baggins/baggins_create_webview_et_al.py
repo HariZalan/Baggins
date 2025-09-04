@@ -144,15 +144,13 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		else:
 			TheThirdOne.set_text("")
 	def goback(webv):
-		def thread():
-			while webv.is_loading():
-				pass
-			webv.go_back()
+		while webv.is_loading():
+			pass
+		webv.go_back()
 	def goforward(webv):
-		def thread():
-			while webv.is_loading():
-				pass
-			webv.go_forward()
+		while webv.is_loading():
+			pass
+		webv.go_forward()
 	icon=bilbospath+"/Bilbo.png"
 	if (webv==None):
 		def loadfailed(webv,uri,cert,err):
@@ -268,11 +266,23 @@ Round and round far underground<br/>
 		webv.connect("permission-request", lambda x,y: cameraandmicrophone(application,y))
 		webv.connect("web-process-terminated",lambda x,y: terminated(x))
 	def urichanged(entry,webv):
+		if not kiosk:
+			title=webv.get_title()
+			if not traditional:
+				nb=webv.get_parent()
+				nb=nb.get_parent()
+				nb=nb.get_parent()
+				nb=nb.get_parent()
+			else:
+				nb=webv.get_parent()
+				nb=nb.get_parent()
+				nb=nb.get_parent()
+			nb.set_tab_label(nb.get_nth_page(nb.get_current_page()),Gtk.Label(label=title))
 		txt=webv.get_uri()
 		if (txt.endswith("#baggins-browser-close-requested")):
 			exit(0)
 		if (txt==mainpage):
-			txt=""
+		    txt=""
 		entry.set_text(txt)
 	if (kiosk==False):
 		box2=Gtk.Box()
