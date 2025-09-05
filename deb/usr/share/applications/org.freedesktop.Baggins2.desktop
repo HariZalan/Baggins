@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Baggins (for opening files)
+Comment=Minimalistic browser
+Exec=/usr/bin/baggins -f %f
+Terminal=false
+Type=Application
+Icon=web-browser
+StartupNotify=true
+NoDisplay=true
+Categories=Browser

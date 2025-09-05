@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Baggins
 Comment=Minimalistic browser
-Exec=/usr/bin/baggins -f %f
+Exec=/usr/bin/baggins
 Terminal=false
 Type=Application
 Icon=web-browser
