@@ -189,16 +189,10 @@ def openWebPage2(page=None,traditional=False,webv=None,name="Baggins",version="2
 		webv.set_vexpand(True)
 		def decdest(download,theroad):
 			destination=theroad
-			download.set_destination(GLib.filename_to_uri(os.path.expanduser("~")+"/"+"Downloads/"+destination))
-			dialogue=Gtk.Window()
-			label=Gtk.Label(label="A download has started.")
-			box=Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-			dialogue.set_child(box)
-			box.append(label)
-			ok=Gtk.Button(label="I have acknowledged")
-			ok.connect("clicked",lambda x: dialogue.destroy())
-			box.append(ok)
-			dialogue.present()
+			download.set_destination(os.path.expanduser("~")+"/"+"Downloads/"+destination)
+			dialog=Gtk.AlertDialog()
+			dialog.set_message("A download has started at "+download.get_destination())
+			dialog.show()
 		def downstart(session,download):
 			download.connect("decide-destination",decdest)
 		WebKit2.NetworkSession.get_default().connect("download-started",downstart)
@@ -284,6 +278,12 @@ Round and round far underground<br/>
 		if (txt==mainpage):
 		    txt=""
 		entry.set_text(txt)
+	def mhtml(webv):
+		path=os.path.expanduser("~")+"/Downloads/"+str(random.randrange(10000))+".mhtml"
+		webv.save_to_file(Gio.File.new_for_path(path),WebKit2.SaveMode(0),None,None,None)
+		dialog=Gtk.AlertDialog()
+		dialog.set_message("You can find the file at "+path)
+		dialog.show()
 	if (kiosk==False):
 		box2=Gtk.Box()
 		entrie=Gtk.Entry()
@@ -300,7 +300,7 @@ Round and round far underground<br/>
 		button5=Gtk.Button.new_from_icon_name("view-refresh-symbolic")
 		button5.connect("clicked",lambda x: webv.reload())
 		button6=Gtk.Button.new_from_icon_name("folder-download-symbolic")
-		button6.connect("clicked",lambda x: webv.save_to_file(Gio.File.new_for_path(os.path.expanduser("~")+"/Downloads/"+str(random.randrange(10000))+".mhtml"),WebKit2.SaveMode(0),None,None,None))
+		button6.connect("clicked",lambda x: mhtml(webv))
 		button7=Gtk.Button.new_from_icon_name("help-about-symbolic")
 		button7.connect("clicked",lambda x: aboutdialog())
 		webv.connect("load-changed",lambda x,y: urichanged(entrie,webv))
