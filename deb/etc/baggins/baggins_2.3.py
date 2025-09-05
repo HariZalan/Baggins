@@ -61,6 +61,7 @@ argpersar.add_argument("-0","--none",action="store_true")
 argpersar.add_argument("-c","--closable",action="store_true")
 argpersar.add_argument("-a","--createapplication",action="store_true")
 argpersar.add_argument("-b","--about",action="store_true")
+argpersar.add_argument("-f","--file",action="store_true")
 argpersar.add_argument("url",nargs="?")
 argpersar.add_argument("--title",nargs="?")
 argpersar.add_argument("--aid",nargs="?")
@@ -73,7 +74,7 @@ sEngineF=open(bagpath+"/searchengine")
 sEngine=sEngineF.read()
 sEngineF.close()
 if (arglistr.createapplication==True):
-	subprocess.run(path+"/baggins_create_application.py")
+	import baggins_create_application
 	sys.exit(0)
 if (arglistr.update==True):
 	getgetconf()
@@ -99,6 +100,8 @@ if (arglistr.update==True):
 			print ("The update has been completed.")
 	sys.exit(0)
 url=arglistr.url
+if (arglistr.file==True):
+	url="file://"+os.path.join(path,url)
 closable=arglistr.closable
 title=arglistr.title
 aid=arglistr.aid
@@ -129,10 +132,10 @@ if (arglistr.importdata==True):
 		storage.close()
 		sys.exit(0)
 if (arglistr.setup==True):
-	subprocess.run(path+"/baggins_setup.py")
+	import baggins_setup
 	sys.exit(0)
 if (arglistr.about):
-	subprocess.run(path+"/about.py")
+	import about
 	sys.exit(0)
 private=arglistr.private or False
 if (arglistr.none==True):
